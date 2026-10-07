@@ -755,11 +755,18 @@ function showSub(s){$$('.subview').forEach(v=>v.classList.remove('on'));$('#s-'+
   if(s==='board'){fillKelasFilter('#lb-filter');renderBoard();}
   if(s==='badges')renderBadges();if(s==='hasil')renderHasil();
   window.scrollTo(0,0);}
-function showA(s){$$('.asub').forEach(v=>v.classList.remove('on'));$('#'+s).classList.add('on');
+function showA(s){
+  $$('.asub').forEach(v=>v.classList.remove('on'));
+  $('#a-'+s).classList.add('on');
   $$('.anv').forEach(b=>b.classList.toggle('act',b.dataset.a===s));
-  if(s==='astat')renderAStat();if(s==='astud'){fillKelasFilter('#fs-kelas',true);renderAStudents();}
-  if(s==='amon')renderMonitor();if(s==='aanal')renderAnalysis();if(s==='arekap')renderRekap();
-  if(s==='aman')renderManage();window.scrollTo(0,0);}
+  if(s==='astat')renderAStat();
+  if(s==='astud'){fillKelasFilter('#fs-kelas',true);renderAStudents();}
+  if(s==='amon')renderMonitor();
+  if(s==='aanal')renderAnalysis();
+  if(s==='arekap')renderRekap();
+  if(s==='aman')renderManage();
+  window.scrollTo(0,0);
+}
 function fillKelasFilter(sel,all){
   const ks=[...new Set(db.students.map(s=>s.kelas))].sort();
   $(sel).innerHTML=(all?'<option value="">Semua Kelas</option>':'<option value="">Semua Kelas</option>')+ks.map(k=>'<option>'+k+'</option>').join('');}
@@ -803,10 +810,7 @@ function renderLevelMap(id,click){
 let S=null,timerIv=null;
 function openLevel(id){
   const L=LEVELS.find(l=>l.id===id);
-  let qs=allQ().filter(q=>q.lv===id||(id<=5&&q.c===L.cat&&q.lv===undefined)||(id===7&&q.c==='final'));
-  qs=qs.filter(q=>q.lv===id||q.c===L.cat);
-  if(id<=5)qs=qs.filter(q=>q.c===L.cat);
-  qs.sort((a,b)=>(a.d||1)-(b.d||1));
+  const qs=allQ().filter(q=>q.c===L.cat).sort((a,b)=>(a.d||1)-(b.d||1));
   if(!qs.length){toast('⚠️ Belum ada challenge aktif di level ini.');return;}
   S={L,qs:[...qs],i:0,lives:3,sxp:0,combo:0,fast:0,ok:0,no:0,t0:Date.now(),total:L.id===7?120:null,tleft:120,answered:false};
   showSub('play');renderQ();
