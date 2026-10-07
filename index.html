@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Computational Thinking Challenge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* ============ VARIABEL & DASAR ============ */
+:root{
+  --bg:#070b1c; --bg2:#0b1130; --panel:rgba(255,255,255,.045); --panel2:rgba(255,255,255,.08);
+  --line:rgba(255,255,255,.1); --tx:#eef2ff; --tx2:#9aa5d1;
+  --cy:#22d3ee; --vi:#a78bfa; --ye:#fbbf24; --pk:#f472b6; --gr:#34d399; --rd:#fb7185;
+  --sh:0 20px 50px -20px rgba(0,0,0,.6);
+  --r:20px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;background:
+  radial-gradient(900px 500px at 85% -10%, rgba(167,139,250,.14), transparent 60%),
+  radial-gradient(800px 500px at -10% 30%, rgba(34,211,238,.1), transparent 60%),
+  radial-gradient(700px 500px at 60% 110%, rgba(251,191,36,.07), transparent 60%);
+  pointer-events:none;z-index:0}
+h1,h2,h3{font-weight:800}
+button{font-family:inherit;cursor:pointer;border:none}
+input,select,textarea{font-family:inherit}
+::selection{background:rgba(34,211,238,.35)}
+.view{display:none;position:relative;z-index:1}
+.view.on{display:block}
+.mono{font-family:'JetBrains Mono',monospace}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:var(--sh)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.85rem 1.6rem;border-radius:14px;font-weight:700;font-size:1rem;transition:.2s;min-height:46px;color:var(--tx)}
+.btn:active{transform:scale(.96)}
+.btn-p{background:linear-gradient(135deg,#22d3ee,#8b5cf6);color:#06101f;box-shadow:0 10px 30px -8px rgba(34,211,238,.5)}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 16px 36px -8px rgba(34,211,238,.6)}
+.btn-g{background:var(--panel2);border:1px solid var(--line)}
+.btn-g:hover{background:rgba(255,255,255,.14);transform:translateY(-2px)}
+.btn-y{background:linear-gradient(135deg,#fbbf24,#f472b6);color:#2a1400}
+.btn-warn{background:rgba(251,113,133,.15);border:1px solid rgba(251,113,133,.4);color:#fda4af}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+.tag{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .8rem;border-radius:99px;font-size:.75rem;font-weight:600;border:1px solid var(--line);background:var(--panel)}
+.mut{color:var(--tx2)}
+::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:9px}
+
+/* ============ LATAR PARTIKEL ============ */
+#fx{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.fx-i{position:absolute;opacity:0;font-weight:700;animation:fxUp linear infinite;filter:saturate(.9)}
+@keyframes fxUp{0%{transform:translateY(105vh) rotate(0);opacity:0}10%{opacity:.5}90%{opacity:.4}100%{transform:translateY(-8vh) rotate(30deg);opacity:0}}
+
+/* ============ LANDING ============ */
+.landing{max-width:1150px;margin:0 auto;padding:1.4rem 1.4rem 4rem}
+nav.top{display:flex;justify-content:space-between;align-items:center;padding:.4rem .2rem 3rem}
+.brand{display:flex;align-items:center;gap:.7rem;font-weight:800}
+.brand .lg{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#22d3ee,#8b5cf6);display:grid;place-items:center;font-size:1.3rem}
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:2.5rem;align-items:center;padding:2rem 0 3rem}
+.hero h1{font-size:clamp(2.2rem,5vw,3.9rem);line-height:1.08;font-weight:900;letter-spacing:-.02em}
+.hero h1 .grad{background:linear-gradient(100deg,#22d3ee 10%,#a78bfa 55%,#fbbf24 95%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--tx2);margin:1.2rem 0 2rem;font-size:1.06rem;max-width:34rem}
+.cta{display:flex;gap:1rem;flex-wrap:wrap}
+.hero-stats{display:flex;gap:2rem;margin-top:2.6rem;flex-wrap:wrap}
+.hero-stats b{font-size:1.5rem;display:block}
+.hero-stats span{font-size:.8rem;color:var(--tx2)}
+.robot-wrap{position:relative;display:grid;place-items:center;min-height:340px}
+.robot{width:min(320px,80%);animation:bob 4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+.eye{transform-origin:center;animation:blink 4.2s infinite}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+.chip{position:absolute;padding:.55rem .95rem;border-radius:14px;background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(10px);font-weight:700;font-size:.9rem;animation:bob 5s ease-in-out infinite;box-shadow:var(--sh)}
+.c1{top:6%;left:2%;animation-delay:.6s;border-color:rgba(34,211,238,.4)}
+.c2{top:14%;right:0;animation-delay:1.4s;border-color:rgba(167,139,250,.4)}
+.c3{bottom:16%;left:-2%;animation-delay:2.1s;border-color:rgba(251,191,36,.4)}
+.c4{bottom:4%;right:6%;animation-delay:.9s}
+.feat{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:3rem}
+.feat .card{padding:1.4rem;transition:.25s}
+.feat .card:hover{transform:translateY(-5px);border-color:rgba(34,211,238,.4)}
+.feat .ic{font-size:1.7rem;margin-bottom:.7rem;display:block}
+.feat b{display:block;margin-bottom:.3rem}
+.feat p{font-size:.82rem;color:var(--tx2)}
+
+/* ============ LOGIN ============ */
+.login-wrap{min-height:100vh;display:grid;place-items:center;padding:1.5rem}
+.login-box{width:min(440px,100%);padding:2.4rem;position:relative;z-index:1}
+.login-box h2{font-size:1.6rem;margin:.4rem 0 .3rem}
+.fld{margin:1.1rem 0}
+.fld label{font-size:.8rem;font-weight:600;color:var(--tx2);display:block;margin-bottom:.4rem}
+.fld input,.fld select,.fld textarea{width:100%;padding:.85rem 1rem;border-radius:13px;border:1px solid var(--line);background:rgba(0,0,0,.25);color:var(--tx);font-size:.95rem;outline:none;transition:.2s}
+.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--cy);box-shadow:0 0 0 3px rgba(34,211,238,.15)}
+.err{color:#fda4af;font-size:.85rem;margin-top:.7rem;display:none}
+
+/* ============ APP SHELL ============ */
+.shell{display:flex;min-height:100vh;position:relative;z-index:1}
+.side{width:250px;flex-shrink:0;padding:1.3rem .9rem;border-right:1px solid var(--line);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:.3rem;background:rgba(7,11,28,.6);backdrop-filter:blur(16px)}
+.side .btn{justify-content:flex-start;width:100%;background:transparent;border:1px solid transparent;font-weight:600;font-size:.92rem;padding:.7rem 1rem}
+.side .btn:hover{background:var(--panel2)}
+.side .btn.act{background:linear-gradient(90deg,rgba(34,211,238,.16),rgba(139,92,246,.16));border-color:rgba(34,211,238,.35);color:#a5f3fc}
+.side .sp{flex:1}
+.main{flex:1;padding:1.6rem 1.8rem 5rem;max-width:1080px;margin:0 auto;width:100%}
+.mtop{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.mobnav{display:none}
+.subview{display:none}.subview.on{display:block;animation:fadeUp .35s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* Dashboard */
+.hello{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;margin-bottom:1.4rem}
+.hello h2{font-size:clamp(1.4rem,3vw,2rem)}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.3rem 0}
+.stat{padding:1.1rem 1.2rem;position:relative;overflow:hidden}
+.stat .ic{position:absolute;right:.8rem;top:.7rem;font-size:1.4rem;opacity:.85}
+.stat b{font-size:1.55rem;display:block}
+.stat span{font-size:.75rem;color:var(--tx2)}
+.pbar{height:12px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin:.7rem 0 .4rem}
+.pbar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#22d3ee,#a78bfa,#fbbf24);transition:width 1s cubic-bezier(.2,.8,.2,1)}
+.lvmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem;margin-top:1rem}
+.lvcard{padding:1.2rem;display:flex;gap:1rem;align-items:center;transition:.25s;position:relative}
+.lvcard:hover{transform:translateY(-4px)}
+.lvcard.lock{opacity:.5;filter:grayscale(.6)}
+.lvcard .num{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;font-size:1.5rem;flex-shrink:0;background:var(--panel2);border:1px solid var(--line)}
+.lvcard.done .num{background:linear-gradient(135deg,rgba(52,211,153,.3),rgba(34,211,238,.3));border-color:rgba(52,211,153,.5)}
+.lvcard h4{font-size:.98rem}
+.lvcard small{color:var(--tx2);font-size:.74rem;display:block}
+.stars{font-size:.75rem;letter-spacing:1px}
+.lvcard .go{margin-left:auto;font-size:1.2rem}
+
+/* GAME */
+.ghead{display:flex;justify-content:space-between;align-items:center;gap:.8rem;flex-wrap:wrap;padding:1rem 1.2rem;margin-bottom:1.2rem}
+.lives{font-size:1.25rem;letter-spacing:2px}
+.combo{background:linear-gradient(135deg,rgba(251,191,36,.25),rgba(244,114,182,.25));border:1px solid rgba(251,191,36,.5);color:#fde68a;padding:.3rem .8rem;border-radius:99px;font-weight:800;font-size:.85rem;display:none}
+.timerline{height:8px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin:.5rem 0 1.2rem}
+.timerline>i{display:block;height:100%;background:linear-gradient(90deg,#22d3ee,#a78bfa);transition:width .2s linear;border-radius:99px}
+.timerline.hot>i{background:linear-gradient(90deg,#fb7185,#fbbf24)}
+.qcard{padding:1.8rem;animation:qIn .4s}
+@keyframes qIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+.qmeta{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap}
+.qtext{font-size:1.2rem;font-weight:600;line-height:1.55;margin-bottom:1.4rem}
+.opts{display:grid;gap:.7rem}
+.opt{padding:.9rem 1.1rem;border-radius:14px;border:1px solid var(--line);background:rgba(0,0,0,.22);color:var(--tx);font-size:1rem;text-align:left;font-weight:500;transition:.15s;min-height:48px}
+.opt:hover{border-color:var(--cy);background:rgba(34,211,238,.08);transform:translateX(4px)}
+.opt.big{font-size:1.7rem;text-align:center;padding:1rem}
+.opt.ok{border-color:var(--gr);background:rgba(52,211,153,.15)}
+.opt.no{border-color:var(--rd);background:rgba(251,113,133,.15)}
+.opt:disabled{transform:none!important}
+.feedback{margin-top:1.2rem;padding:1.1rem 1.3rem;border-radius:16px;display:none;animation:fadeUp .3s}
+.feedback.on{display:block}
+.feedback.good{background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.4)}
+.feedback.bad{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.35)}
+.feedback h4{margin-bottom:.4rem;font-size:1.05rem}
+.feedback p{font-size:.9rem;color:var(--tx2)}
+.xpfly{position:fixed;font-weight:900;font-size:1.3rem;color:var(--ye);pointer-events:none;z-index:99;animation:fly 1.1s forwards}
+@keyframes fly{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-70px)}}
+/* order / group / maze */
+.pool{display:flex;flex-wrap:wrap;gap:.6rem;margin:.8rem 0}
+.pit{padding:.7rem 1rem;border-radius:12px;border:1px solid var(--line);background:var(--panel2);font-size:.9rem;font-weight:600;transition:.15s;min-height:44px}
+.pit:hover{border-color:var(--cy)}
+.pit.sel{border-color:var(--ye);background:rgba(251,191,36,.15);box-shadow:0 0 0 2px rgba(251,191,36,.25)}
+.seq{display:flex;flex-direction:column;gap:.5rem;margin:.8rem 0;min-height:60px}
+.sit{display:flex;align-items:center;gap:.7rem;padding:.55rem .8rem;border-radius:12px;border:1px solid rgba(34,211,238,.3);background:rgba(34,211,238,.07);font-size:.9rem}
+.sit .n{width:26px;height:26px;border-radius:8px;background:rgba(34,211,238,.25);display:grid;place-items:center;font-weight:800;font-size:.8rem;flex-shrink:0}
+.sit .mv{margin-left:auto;display:flex;gap:.2rem}
+.sit .mv button{background:none;color:var(--tx2);font-size:1rem;padding:.15rem .4rem;border-radius:6px}
+.sit .mv button:hover{color:var(--tx);background:rgba(255,255,255,.1)}
+.gzones{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.8rem;margin-top:1rem}
+.gz{border:2px dashed rgba(255,255,255,.2);border-radius:16px;padding:.8rem;min-height:110px;transition:.2s}
+.gz h5{text-align:center;margin-bottom:.6rem;font-size:.9rem}
+.gz.hit{border-color:var(--ye);background:rgba(251,191,36,.08)}
+.gz .pit{width:100%;font-size:.82rem}
+.gz .pit.ok{border-color:var(--gr)}.gz .pit.no{border-color:var(--rd)}
+.mzgrid{position:relative;display:grid;gap:4px;width:min(360px,100%);margin:1rem auto;background:rgba(0,0,0,.3);padding:10px;border-radius:16px;border:1px solid var(--line)}
+.mzc{aspect-ratio:1;border-radius:7px;background:rgba(255,255,255,.06);display:grid;place-items:center;font-size:1rem}
+.mzc.w{background:rgba(139,92,246,.35);box-shadow:inset 0 0 8px rgba(139,92,246,.4)}
+.mzc.g{background:rgba(251,191,36,.25);border:1px solid rgba(251,191,36,.5)}
+.mzc.v{background:rgba(34,211,238,.18)}
+#mzbot{position:absolute;width:11%;aspect-ratio:1;border-radius:50%;background:linear-gradient(135deg,#22d3ee,#8b5cf6);display:grid;place-items:center;font-size:clamp(.7rem,3vw,1rem);transition:left .25s,top .25s;z-index:2;box-shadow:0 4px 14px rgba(34,211,238,.5)}
+#mzbot.shake{animation:shk .4s}
+@keyframes shk{0%,100%{transform:translate(-50%,-50%)}25%{transform:translate(-58%,-50%)}75%{transform:translate(-42%,-50%)}}
+.cmds{display:flex;flex-wrap:wrap;gap:.4rem;margin:.7rem 0;min-height:40px}
+.cmd{font-size:1.1rem;padding:.4rem .6rem;border-radius:10px;background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.35)}
+.pad{display:grid;grid-template-columns:repeat(3,64px);gap:.4rem;justify-content:center;margin:.6rem 0}
+.pad button{height:56px;font-size:1.3rem;border-radius:14px;background:var(--panel2);border:1px solid var(--line);color:var(--tx)}
+.pad button:hover{border-color:var(--cy)}
+.inp-code{width:100%;max-width:320px;text-align:center;letter-spacing:6px;font-family:'JetBrains Mono',monospace;font-size:1.3rem;text-transform:uppercase}
+.gcenter{display:grid;place-items:center}
+.gactions{display:flex;gap:.8rem;justify-content:center;margin-top:1.2rem;flex-wrap:wrap}
+/* hasil level & gameover */
+.centerbox{max-width:560px;margin:3rem auto;padding:2.4rem;text-align:center}
+.bigic{font-size:4rem;animation:bob 3s infinite}
+.resrow{display:flex;justify-content:space-between;padding:.7rem 0;border-bottom:1px dashed var(--line);font-size:.95rem}
+.resrow b{color:var(--ye)}
+
+/* BADGE POPUP / TOAST */
+.pop{position:fixed;inset:0;background:rgba(4,7,18,.8);backdrop-filter:blur(6px);display:none;place-items:center;z-index:90;padding:1.2rem}
+.pop.on{display:grid}
+.pop .inner{max-width:400px;width:100%;padding:2.2rem;text-align:center;animation:popIn .45s cubic-bezier(.2,1.4,.4,1)}
+@keyframes popIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+.badge-ic{width:96px;height:96px;margin:0 auto 1rem;border-radius:50%;display:grid;place-items:center;font-size:3rem;background:linear-gradient(135deg,rgba(251,191,36,.3),rgba(244,114,182,.3));border:2px solid rgba(251,191,36,.6);animation:bob 2.5s infinite}
+#toasts{position:fixed;top:1rem;right:1rem;z-index:95;display:flex;flex-direction:column;gap:.5rem}
+.toast{padding:.8rem 1.2rem;border-radius:14px;background:rgba(12,18,48,.95);border:1px solid var(--line);font-size:.88rem;font-weight:600;animation:fadeUp .3s;box-shadow:var(--sh);max-width:320px}
+#confettiC{position:fixed;inset:0;pointer-events:none;z-index:99}
+
+/* LEADERBOARD & TABEL */
+.tbl{width:100%;border-collapse:collapse;font-size:.88rem}
+.tbl th{text-align:left;padding:.7rem .8rem;color:var(--tx2);font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--line)}
+.tbl td{padding:.75rem .8rem;border-bottom:1px solid rgba(255,255,255,.05)}
+.tbl tr:hover td{background:rgba(255,255,255,.03)}
+.tbl tr.me td{background:rgba(34,211,238,.09)}
+.medal{font-size:1.15rem}
+.tblwrap{overflow-x:auto;border-radius:16px}
+.chipd{padding:.15rem .6rem;border-radius:99px;font-size:.72rem;font-weight:700}
+.d1{background:rgba(52,211,153,.15);color:#6ee7b7}.d2{background:rgba(251,191,36,.15);color:#fcd34d}
+.d3{background:rgba(244,114,182,.15);color:#f9a8d4}.d4{background:rgba(251,113,133,.2);color:#fda4af}
+.dotg{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--gr);box-shadow:0 0 8px var(--gr);animation:pulse 1.5s infinite}
+@keyframes pulse{50%{opacity:.4}}
+
+/* SKILL BARS */
+.skbar{display:flex;align-items:center;gap:1rem;margin:.8rem 0}
+.skbar .nm{width:130px;font-size:.88rem;font-weight:600;flex-shrink:0}
+.skbar .tr{flex:1;height:14px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}
+.skbar .tr>i{display:block;height:100%;border-radius:99px;width:0;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.skbar .pc{width:52px;text-align:right;font-weight:800;font-size:.9rem}
+
+/* ADMIN */
+.asub{display:none}.asub.on{display:block;animation:fadeUp .3s}
+.acards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1rem;margin-bottom:1.4rem}
+.toolbar{display:flex;gap:.7rem;flex-wrap:wrap;margin:1rem 0;align-items:center}
+.act-feed{max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:.55rem}
+.act-it{display:flex;gap:.7rem;align-items:flex-start;padding:.7rem .9rem;border-radius:13px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);font-size:.88rem;animation:fadeUp .3s}
+.act-it time{margin-left:auto;color:var(--tx2);font-size:.72rem;flex-shrink:0}
+.modal-fldrow{display:grid;grid-template-columns:1fr 1fr;gap:0 1rem}
+.hintbox{font-size:.8rem;color:var(--tx2);background:rgba(34,211,238,.07);border:1px solid rgba(34,211,238,.25);padding:.6rem .9rem;border-radius:10px;margin-top:1rem}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;text-align:center}
+  .hero p{margin-inline:auto}.cta{justify-content:center}
+  .hero-stats{justify-content:center}
+  .robot-wrap{order:-1;min-height:280px}
+  .feat{grid-template-columns:1fr 1fr}
+}
+@media (max-width:760px){
+  .side{position:fixed;bottom:0;top:auto;left:0;right:0;width:100%;height:auto;flex-direction:row;padding:.35rem .4rem;overflow-x:auto;border-right:none;border-top:1px solid var(--line);z-index:50;justify-content:space-between}
+  .side .btn{width:auto;flex-shrink:0;font-size:.72rem;padding:.5rem .7rem;flex-direction:column;gap:.15rem;min-height:0}
+  .side .btn.hd,.side .sp{display:none}
+  .main{padding:1.2rem 1rem 7rem}
+  .modal-fldrow{grid-template-columns:1fr}
+  .skbar .nm{width:90px;font-size:.78rem}
+  .feat{grid-template-columns:1fr}
+}
+@media print{
+  body *{visibility:hidden}
+  #printArea,#printArea *{visibility:visible}
+  #printArea{position:absolute;top:0;left:0;width:100%;color:#000}
+  #printArea table{color:#000;border-collapse:collapse}
+  #printArea th,#printArea td{border:1px solid #999;padding:4px 8px}
+}
+</style>
+</head>
+<body>
+<div id="fx"></div>
+<canvas id="confettiC"></canvas>
+<div id="toasts"></div>
+
+<!-- ============ LANDING ============ -->
+<section id="v-landing" class="view on">
+  <div class="landing">
+    <nav class="top">
+      <div class="brand"><div class="lg">🧠</div> CT&nbsp;Challenge</div>
+      <button class="btn btn-g" onclick="go('v-adminlogin')">👨‍🏫 Login Admin</button>
+    </nav>
+    <div class="hero">
+      <div>
+        <span class="tag" style="border-color:rgba(34,211,238,.4);color:#a5f3fc">⚡ Game Edukasi Berpikir Komputasional · SMP Kelas 7</span>
+        <h1 style="margin-top:1rem">COMPUTATIONAL<br>THINKING <span class="grad">CHALLENGE</span></h1>
+        <p><b style="color:var(--tx)">“Apakah kamu cukup pintar untuk menaklukkan semua tantangan?”</b><br>
+        Pecahkan Masalah. Susun Strategi. Taklukkan Tantangan! Petualangan 7 level penuh puzzle, robot, dan kode rahasia menantimu.</p>
+        <div class="cta">
+          <button class="btn btn-p" style="font-size:1.1rem;padding:1rem 2.2rem" onclick="go('v-login')">🚀 MULAI GAME</button>
+          <button class="btn btn-g" onclick="go('v-adminlogin')">👨‍🏫 LOGIN ADMIN</button>
+        </div>
+        <div class="hero-stats">
+          <div><b style="color:var(--cy)">7</b><span>Level Misi</span></div>
+          <div><b style="color:var(--vi)">64+</b><span>Challenge</span></div>
+          <div><b style="color:var(--ye)">6</b><span>Badge Kejara</span></div>
+          <div><b style="color:var(--pk)">5</b><span>Materi CT</span></div>
+        </div>
+      </div>
+      <div class="robot-wrap">
+        <div class="chip c1">🧩 Puzzle</div><div class="chip c2">01 10 11</div>
+        <div class="chip c3">⚙️ Algoritma</div><div class="chip c4">🔓 CODE</div>
+        <!-- Robot futuristik -->
+        <svg class="robot" viewBox="0 0 300 300">
+          <defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient>
+            <linearGradient id="rs" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#1b2450"/><stop offset="1" stop-color="#0d1330"/></linearGradient></defs>
+          <ellipse cx="150" cy="278" rx="85" ry="12" fill="rgba(34,211,238,.15)"/>
+          <line x1="150" y1="26" x2="150" y2="48" stroke="url(#rg)" stroke-width="5"/>
+          <circle cx="150" cy="20" r="9" fill="#fbbf24"><animate attributeName="opacity" values="1;.3;1" dur="1.4s" repeatCount="indefinite"/></circle>
+          <rect x="82" y="48" width="136" height="98" rx="30" fill="url(#rs)" stroke="url(#rg)" stroke-width="3"/>
+          <circle class="eye" cx="122" cy="94" r="15" fill="#22d3ee"/>
+          <circle class="eye" cx="178" cy="94" r="15" fill="#22d3ee"/>
+          <circle cx="122" cy="94" r="6" fill="#06101f"/><circle cx="178" cy="94" r="6" fill="#06101f"/>
+          <path d="M128 122 q22 14 44 0" stroke="#a78bfa" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <rect x="92" y="156" width="116" height="88" rx="24" fill="url(#rs)" stroke="rgba(255,255,255,.15)" stroke-width="2"/>
+          <rect x="112" y="176" width="76" height="48" rx="10" fill="#06101f" stroke="rgba(34,211,238,.5)" stroke-width="2"/>
+          <text x="150" y="207" text-anchor="middle" font-family="JetBrains Mono" font-size="17" fill="#22d3ee" font-weight="bold">&lt;/&gt;</text>
+          <rect x="62" y="164" width="24" height="58" rx="12" fill="url(#rs)" stroke="url(#rg)" stroke-width="2"/>
+          <rect x="214" y="164" width="24" height="58" rx="12" fill="url(#rs)" stroke="url(#rg)" stroke-width="2"/>
+          <rect x="112" y="250" width="30" height="26" rx="10" fill="#141b42" stroke="rgba(255,255,255,.15)"/>
+          <rect x="158" y="250" width="30" height="26" rx="10" fill="#141b42" stroke="rgba(255,255,255,.15)"/>
+        </svg>
+      </div>
+    </div>
+    <div class="feat">
+      <div class="card"><span class="ic">🔍</span><b>Detektif Pola</b><p>Temukan pola angka, bentuk, dan logika berulang yang tersembunyi.</p></div>
+      <div class="card"><span class="ic">🧩</span><b>Pecahkan Masalah</b><p>Susun langkah-langkah solusi dengan strategi dekomposisi.</p></div>
+      <div class="card"><span class="ic">🤖</span><b>Master Algoritma</b><p>Pandu robot melewati labirin dengan susunan perintahmu.</p></div>
+      <div class="card"><span class="ic">🔐</span><b>Code Breaker</b><p>Dekripsi sandi rahasia: angka, biner, hingga Caesar Cipher.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LOGIN SISWA ============ -->
+<section id="v-login" class="view">
+  <div class="login-wrap"><div class="login-box card">
+    <div style="font-size:2.4rem;text-align:center">🚀</div>
+    <h2 style="text-align:center">Mulai Petualangan</h2>
+    <p class="mut" style="text-align:center;font-size:.88rem">Masukkan identitasmu, agen. Misi menantimu.</p>
+    <div class="fld"><label>👤 Nama Siswa</label><input id="in-nama" placeholder="Contoh: Andi Pratama" maxlength="30"></div>
+    <div class="fld"><label>🆔 NIS</label><input id="in-nis" placeholder="Contoh: 7100123" maxlength="12"></div>
+    <div class="fld"><label>🏫 Kelas</label><select id="in-kelas"><option>7A</option><option>7B</option><option>7C</option><option>7D</option></select></div>
+    <p id="login-err" class="err">⚠️ Lengkapi semua data ya! Nama & NIS wajib diisi.</p>
+    <button class="btn btn-p" style="width:100%;margin-top:.6rem" onclick="loginSiswa()">🚀 MULAI PETUALANGAN</button>
+    <div class="hintbox">💡 Sudah pernah bermain? Masukkan <b>Nama & NIS yang sama</b> untuk melanjutkan progresmu.</div>
+    <button class="btn btn-g" style="width:100%;margin-top:.8rem" onclick="go('v-landing')">← Kembali</button>
+  </div></div>
+</section>
+
+<!-- ============ LOGIN ADMIN ============ -->
+<section id="v-adminlogin" class="view">
+  <div class="login-wrap"><div class="login-box card" style="border-color:rgba(251,191,36,.3)">
+    <div style="font-size:2.4rem;text-align:center">👨‍🏫</div>
+    <h2 style="text-align:center">Login Admin / Guru</h2>
+    <p class="mut" style="text-align:center;font-size:.88rem">Khusus guru untuk memantau & mengelola.</p>
+    <div class="fld"><label>Username</label><input id="ad-user" placeholder="admin"></div>
+    <div class="fld"><label>Password</label><input id="ad-pass" type="password" placeholder="••••••••"></div>
+    <p id="admin-err" class="err">⚠️ Username atau password salah!</p>
+    <button class="btn btn-y" style="width:100%;margin-top:.6rem" onclick="loginAdmin()">🔓 MASUK DASHBOARD</button>
+    <div class="hintbox">🔑 Demo: username <b class="mono">admin</b> · password <b class="mono">admin123</b></div>
+    <button class="btn btn-g" style="width:100%;margin-top:.8rem" onclick="go('v-landing')">← Kembali</button>
+  </div></div>
+</section>
+
+<!-- ============ APP SISWA ============ -->
+<section id="v-app" class="view">
+  <div class="shell">
+    <aside class="side">
+      <div class="btn hd brand" style="margin-bottom:.8rem"><div class="lg">🧠</div><div style="line-height:1.1;font-size:.85rem">CT<br>Challenge</div></div>
+      <button class="btn snv" data-s="dash" onclick="showSub('dash')">🏠 Dashboard</button>
+      <button class="btn snv" data-s="play" onclick="showSub('play')">🎮 Mulai Game</button>
+      <button class="btn snv" data-s="board" onclick="showSub('board')">🏆 Leaderboard</button>
+      <button class="btn snv" data-s="badges" onclick="showSub('badges')">🎖️ Pencapaian</button>
+      <button class="btn snv" data-s="hasil" onclick="showSub('hasil')">📊 Hasil Saya</button>
+      <div class="sp"></div>
+      <button class="btn" onclick="logout()">🚪 Keluar</button>
+    </aside>
+    <div class="main">
+      <!-- DASHBOARD -->
+      <div id="s-dash" class="subview on">
+        <div class="hello">
+          <div><h2>Halo, <span id="d-nama" style="color:var(--cy)"></span>! 👋</h2>
+          <p class="mut" id="d-sub" style="font-size:.88rem"></p></div>
+          <button class="btn btn-p" onclick="showSub('play')">🎮 Lanjut Misi</button>
+        </div>
+        <div class="card" style="padding:1.3rem">
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:.4rem">
+            <b id="d-lvlabel">LEVEL 1</b><span class="mut" id="d-lvpct" style="font-size:.85rem">0%</span>
+          </div>
+          <div class="pbar"><i id="d-lvbar" style="width:0%"></i></div>
+          <div style="display:flex;gap:1.5rem;flex-wrap:wrap;font-size:.8rem" class="mut">
+            <span>🆔 NIS: <b id="d-nis" style="color:var(--tx)"></b></span>
+            <span>🏫 Kelas: <b id="d-kelas" style="color:var(--tx)"></b></span>
+            <span>🏅 Ranking: <b id="d-rank" style="color:var(--ye)"></b></span>
+            <span>✅ Selesai: <b id="d-done" style="color:var(--gr)"></b></span>
+          </div>
+        </div>
+        <div class="statgrid" id="d-stats"></div>
+        <h3 style="margin:1.6rem 0 .4rem">🗺️ Peta Petualangan</h3>
+        <p class="mut" style="font-size:.82rem">Selesaikan level satu per satu untuk membuka misi berikutnya!</p>
+        <div class="lvmap" id="d-lvmap"></div>
+      </div>
+      <!-- PLAY -->
+      <div id="s-play" class="subview">
+        <h2>🎮 Pilih Misimu</h2>
+        <p class="mut" style="font-size:.88rem;margin-bottom:1.2rem">Setiap level melatih kemampuan berpikir komputasional yang berbeda.</p>
+        <div class="lvmap" id="p-lvmap"></div>
+        <div id="g-area"></div>
+      </div>
+      <!-- LEADERBOARD -->
+      <div id="s-board" class="subview">
+        <h2>🏆 Leaderboard</h2>
+        <p class="mut" style="font-size:.88rem;margin:.3rem 0 1rem">Peringkat berdasarkan XP tertinggi seluruh sekolah.</p>
+        <div class="toolbar"><span class="mut" style="font-size:.85rem">Filter kelas:</span>
+          <select id="lb-filter" onchange="renderBoard()" style="padding:.6rem 1rem;border-radius:12px;background:rgba(0,0,0,.3);border:1px solid var(--line);color:var(--tx)"></select></div>
+        <div class="card tblwrap" style="padding:1rem" id="lb-body"></div>
+      </div>
+      <!-- BADGES -->
+      <div id="s-badges" class="subview">
+        <h2>🎖️ Pencapaian</h2>
+        <p class="mut" style="font-size:.88rem;margin:.3rem 0 1.2rem">Kumpulkan semua badge untuk membuktikan kamu sang master!</p>
+        <div id="bd-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem"></div>
+      </div>
+      <!-- HASIL -->
+      <div id="s-hasil" class="subview">
+        <h2>📊 Hasil Saya</h2>
+        <p class="mut" style="font-size:.88rem;margin:.3rem 0 1.2rem">Rekap performa belajarmu sejauh ini.</p>
+        <div id="hs-body"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ APP ADMIN ============ -->
+<section id="v-admin" class="view">
+  <div class="shell">
+    <aside class="side">
+      <div class="btn hd brand" style="margin-bottom:.8rem"><div class="lg" style="background:linear-gradient(135deg,#fbbf24,#f472b6)">👨‍🏫</div><div style="line-height:1.1;font-size:.85rem">Admin<br>Dashboard</div></div>
+      <button class="btn anv" data-a="astat" onclick="showA('astat')">📈 Statistik</button>
+      <button class="btn anv" data-a="astud" onclick="showA('astud')">👨‍🎓 Data Siswa</button>
+      <button class="btn anv" data-a="amon" onclick="showA('amon')">📡 Monitoring</button>
+      <button class="btn anv" data-a="aanal" onclick="showA('aanal')">🧠 Analisis</button>
+      <button class="btn anv" data-a="arekap" onclick="showA('arekap')">📋 Rekap Nilai</button>
+      <button class="btn anv" data-a="aman" onclick="showA('aman')">🧩 Challenge</button>
+      <div class="sp"></div>
+      <button class="btn" onclick="logout()">🚪 Keluar</button>
+    </aside>
+    <div class="main">
+      <div class="mtop"><h2 style="font-size:1.4rem">Admin Dashboard</h2><span class="tag"><span class="dotg"></span> Terhubung localStorage</span></div>
+      <div id="a-astat" class="asub on">
+        <div class="acards" id="as-cards"></div>
+        <div class="card" style="padding:1.4rem">
+          <h3 style="margin-bottom:.6rem">🔥 XP Tertinggi Hari Ini</h3>
+          <div id="as-top"></div>
+        </div>
+      </div>
+      <div id="a-astud" class="asub">
+        <div class="toolbar"><input id="fs-cari" placeholder="🔍 Cari nama / NIS…" oninput="renderAStudents()" style="padding:.65rem 1rem;border-radius:12px;background:rgba(0,0,0,.3);border:1px solid var(--line);color:var(--tx);min-width:220px">
+          <select id="fs-kelas" onchange="renderAStudents()" style="padding:.65rem 1rem;border-radius:12px;background:rgba(0,0,0,.3);border:1px solid var(--line);color:var(--tx)"></select></div>
+        <div class="card tblwrap" style="padding:1rem" id="as-tbl"></div>
+      </div>
+      <div id="a-amon" class="asub">
+        <div class="card" style="padding:1.4rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+            <h3>📡 AKTIVITAS TERBARU</h3><span class="tag"><span class="dotg"></span> Live</span>
+          </div>
+          <div class="act-feed" id="am-feed"></div>
+        </div>
+      </div>
+      <div id="a-aanal" class="asub">
+        <div class="card" style="padding:1.6rem">
+          <h3>🧠 Kemampuan Berpikir Komputasional</h3>
+          <p class="mut" style="font-size:.85rem;margin:.3rem 0 1.4rem">Rata-rata akurasi seluruh siswa per materi.</p>
+          <div id="aa-bars"></div>
+          <div class="hintbox" id="aa-rekom" style="margin-top:1.2rem"></div>
+        </div>
+      </div>
+      <div id="a-arekap" class="asub">
+        <div class="toolbar">
+          <button class="btn btn-g" onclick="exportCSV()">📥 Export CSV</button>
+          <button class="btn btn-g" onclick="exportExcel()">📊 Export Excel</button>
+          <button class="btn btn-g" onclick="exportPDF()">🖨️ Export PDF</button>
+        </div>
+        <div class="card tblwrap" style="padding:1rem" id="ar-tbl"></div>
+      </div>
+      <div id="a-aman" class="asub">
+        <div class="toolbar">
+          <button class="btn btn-p" onclick="openChallengeForm()">➕ Tambah Challenge</button>
+          <span class="mut" style="font-size:.83rem" id="am-count"></span>
+        </div>
+        <div class="card tblwrap" style="padding:1rem" id="am-tbl"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POPUP BADGE / GAMEOVER / JUARA / MODAL -->
+<div class="pop" id="pop-badge"><div class="inner card">
+  <div class="badge-ic" id="pb-ic">🏆</div>
+  <h3 id="pb-nm">Badge Baru!</h3>
+  <p class="mut" id="pb-ds" style="font-size:.9rem;margin:.5rem 0 1.4rem"></p>
+  <button class="btn btn-p" style="width:100%" onclick="popOff('pop-badge')">Keren! 🎉</button>
+</div></div>
+
+<div class="pop" id="pop-over"><div class="inner card" style="border-color:rgba(251,113,133,.4)">
+  <div class="bigic">💔</div>
+  <h3>GAME OVER</h3>
+  <p class="mut" style="font-size:.9rem;margin:.6rem 0 1.4rem">Nyawamu habis! Tenang, <b style="color:var(--tx)">progres level sebelumnya tetap aman</b>. Ambil napas, pelajari petunjuknya, lalu coba lagi. 💪</p>
+  <button class="btn btn-p" style="width:100%" onclick="retryLevel()">🔄 Coba Lagi</button>
+  <button class="btn btn-g" style="width:100%;margin-top:.7rem" onclick="popOff('pop-over');showSub('play')">🏠 Kembali ke Peta</button>
+</div></div>
+
+<div class="pop" id="pop-level"><div class="inner card" style="border-color:rgba(52,211,153,.4)">
+  <div class="bigic" id="pl-ic">🎉</div>
+  <h3 id="pl-title">LEVEL SELESAI!</h3>
+  <div id="pl-body" style="margin:1rem 0 1.4rem;text-align:left"></div>
+  <button class="btn btn-p" style="width:100%" id="pl-btn">Lanjut ➜</button>
+</div></div>
+
+<div class="pop" id="pop-form"><div class="inner card" style="max-width:560px;max-height:92vh;overflow-y:auto;text-align:left">
+  <h3 id="pf-title">➕ Tambah Challenge</h3>
+  <input type="hidden" id="pf-id">
+  <div class="fld"><label>Judul Challenge</label><input id="pf-judul" placeholder="Contoh: Pola Angka Loncat 3"></div>
+  <div class="modal-fldrow">
+    <div class="fld"><label>Kategori</label><select id="pf-cat"><option value="pola">Pengenalan Pola</option><option value="dekomposisi">Dekomposisi</option><option value="algoritma">Algoritma</option><option value="abstraksi">Abstraksi</option><option value="logika">Logika</option></select></div>
+    <div class="fld"><label>Tingkat Kesulitan</label><select id="pf-diff"><option value="1">🟢 Mudah</option><option value="2">🟡 Sedang</option><option value="3">🔴 Sulit</option><option value="4">🔥 HOTS</option></select></div>
+  </div>
+  <div class="fld"><label>Pertanyaan</label><textarea id="pf-q" rows="2" placeholder="Tulis pertanyaan…"></textarea></div>
+  <div class="modal-fldrow">
+    <div class="fld"><label>Pilihan A</label><input id="pf-o0"></div>
+    <div class="fld"><label>Pilihan B</label><input id="pf-o1"></div>
+    <div class="fld"><label>Pilihan C</label><input id="pf-o2"></div>
+    <div class="fld"><label>Pilihan D</label><input id="pf-o3"></div>
+  </div>
+  <div class="modal-fldrow">
+    <div class="fld"><label>Jawaban Benar</label><select id="pf-a"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select></div>
+    <div class="fld"><label>Poin</label><input id="pf-poin" type="number" value="100" min="50" step="10"></div>
+  </div>
+  <div class="fld"><label>Timer (detik)</label><input id="pf-timer" type="number" value="40" min="10" max="180"></div>
+  <div class="fld"><label>Penjelasan (feedback benar)</label><input id="pf-ex" placeholder="Mengapa jawabannya benar…"></div>
+  <p id="pf-err" class="err">⚠️ Lengkapi judul, pertanyaan, dan minimal 2 pilihan!</p>
+  <button class="btn btn-p" style="width:100%" onclick="saveChallenge()">💾 Simpan Challenge</button>
+  <button class="btn btn-g" style="width:100%;margin-top:.7rem" onclick="popOff('pop-form')">Batal</button>
+</div></div>
+
+<div class="pop" id="pop-detail"><div class="inner card" style="max-width:600px;max-height:90vh;overflow-y:auto;text-align:left">
+  <div id="pd-body"></div>
+  <button class="btn btn-g" style="width:100%;margin-top:1rem" onclick="popOff('pop-detail')">Tutup</button>
+</div></div>
+
+<div id="printArea" style="display:none"></div>
+
+<script>
+/* ================================================================
+   DATA & PENYIMPANAN (localStorage)
+================================================================ */
+const KEY='ctc_db_v1';
+const CATS={pola:'Pengenalan Pola',dekomposisi:'Dekomposisi',algoritma:'Algoritma',abstraksi:'Abstraksi',logika:'Logika',kode:'Code Breaker',final:'Final Boss'};
+const CATLEVEL={pola:1,dekomposisi:2,algoritma:3,logika:4,abstraksi:5,kode:6,final:7};
+const DIFFXP={1:100,2:120,3:150,4:200};
+const DIFFNAMA={1:'⭐ Mudah',2:'⭐⭐ Medium',3:'⭐⭐⭐ Hard',4:'⭐⭐⭐⭐ HOTS'};
+const DIFFCHIP={1:'d1',2:'d2',3:'d3',4:'d4'};
+const LEVELS=[
+ {id:1,nama:'Detektif Pola',ikon:'🔍',cat:'pola',warn:'#22d3ee',desc:'Pengenalan pola'},
+ {id:2,nama:'Pecahkan Masalah',ikon:'🧩',cat:'dekomposisi',warn:'#a78bfa',desc:'Dekomposisi'},
+ {id:3,nama:'Master Algoritma',ikon:'🤖',cat:'algoritma',warn:'#34d399',desc:'Maze robot'},
+ {id:4,nama:'Master Logika',ikon:'🧠',cat:'logika',warn:'#fbbf24',desc:'IF · ELSE · AND · OR'},
+ {id:5,nama:'Hacker Data',ikon:'🗄️',cat:'abstraksi',warn:'#f472b6',desc:'Pengelompokan data'},
+ {id:6,nama:'Code Breaker',ikon:'🔐',cat:'kode',warn:'#22d3ee',desc:'Sandi & biner'},
+ {id:7,nama:'FINAL BOSS',ikon:'🔥',cat:'final',warn:'#fb7185',desc:'Misi gabungan · 02:00'}
+];
+const BADGES=[
+ {id:'solver',ic:'🏆',nm:'Problem Solver',ds:'Menyelesaikan 10 challenge.'},
+ {id:'logic',ic:'🧠',nm:'Logic Master',ds:'Menjawab 10 soal logika dengan benar.'},
+ {id:'speed',ic:'⚡',nm:'Speed Thinker',ds:'Menyelesaikan 5 challenge dengan waktu cepat.'},
+ {id:'breaker',ic:'🔐',nm:'Code Breaker',ds:'Berhasil memecahkan semua kode di Level 6.'},
+ {id:'algo',ic:'🤖',nm:'Algorithm Master',ds:'Menyelesaikan labirin algoritma.'},
+ {id:'master',ic:'👑',nm:'CT Master',ds:'Menaklukkan SELURUH level!'}
+];
+/* ---------- Bank soal: 64 challenge ---------- */
+const Q=[
+// ===== LEVEL 1 : POLA (10)
+{c:'pola',d:1,t:'mc',q:'Lanjutkan pola berikut:<br><b style="font-size:1.4rem">5, 10, 15, 20, …</b>',o:['25','24','30','22'],a:0,ex:'Setiap angka ditambah 5, jadi 20 + 5 = 25.',h:'Perhatikan selisih antar angka.'},
+{c:'pola',d:1,t:'mc',q:'Bentuk apa yang berikutnya?<br><b style="font-size:1.6rem">🟢 🔵 🟢 🔵 🟢 ?</b>',o:['🔵','🟢','🟡','🔴'],a:0,ex:'Polanya berselang-seling: hijau, biru, hijau, biru… setelah hijau pasti biru.',h:'Cari bagian yang berulang.'},
+{c:'pola',d:2,t:'mc',q:'Lanjutkan pola:<br><b style="font-size:1.4rem">2, 4, 8, 16, …</b>',o:['24','32','20','18'],a:1,ex:'Setiap angka dikali 2: 2→4→8→16→32.',h:'Coba kalikan, bukan tambah.'},
+{c:'pola',d:2,t:'mc',q:'Lanjutkan pola:<br><b style="font-size:1.4rem">1, 1, 2, 3, 5, 8, …</b>',o:['11','12','13','10'],a:2,ex:'Ini pola Fibonacci: angka berikutnya = jumlah dua angka sebelumnya (5+8=13).',h:'Jumlahkan dua angka terakhir.'},
+{c:'pola',d:2,t:'mc',q:'Bentuk apa yang berikutnya?<br><b style="font-size:1.6rem">🔺 🟦 🟦 🔺 🟦 🟦 ?</b>',o:['🔺','🟦','🟨','⬛'],a:0,ex:'Polanya berulang setiap 3 bentuk: 🔺-🟦-🟦. Setelah dua 🟦 kembali ke 🔺.',h:'Kelompokkan menjadi blok berulang.'},
+{c:'pola',d:2,t:'mc',q:'Lanjutkan pola:<br><b style="font-size:1.4rem">100, 90, 81, 73, …</b>',o:['65','66','64','67'],a:1,ex:'Selisihnya berkurang: −10, −9, −8, lalu −7 → 73−7 = 66.',h:'Perhatikan bagaimana selisihnya berubah.'},
+{c:'pola',d:3,t:'mc',q:'Lanjutkan pola:<br><b style="font-size:1.4rem">1, 4, 9, 16, 25, …</b>',o:['30','35','36','49'],a:2,ex:'Ini bilangan kuadrat: 1², 2², 3², 4², 5², berikutnya 6² = 36.',h:'Apa hubungannya dengan perkalian diri sendiri?'},
+{c:'pola',d:3,t:'mc',q:'Bentuk apa yang berikutnya?<br><b style="font-size:1.5rem">🔴🟡🟡 &nbsp;🔴🟡🟡 &nbsp;🔴 ?</b>',o:['🟡 🟡','🟡','🔴','🟢 🟡'],a:0,ex:'Setiap blok berisi 1 merah lalu 2 kuning. Setelah 🔴 pasti datang 🟡🟡.',h:'Baca per blok, bukan per bentuk.'},
+{c:'pola',d:3,t:'mc',q:'Lanjutkan pola huruf:<br><b style="font-size:1.4rem">A, C, E, G, …</b>',o:['H','I','J','K'],a:1,ex:'Setiap huruf melompat 1 huruf (A→C→E→G), berikutnya I.',h:'Gunakan urutan alfabet: A-B-C-D-E-F-G-H-I.'},
+{c:'pola',d:4,t:'mc',q:'Lanjutkan pola:<br><b style="font-size:1.4rem">2, 3, 5, 8, 13, 21, …</b>',o:['30','32','34','35'],a:2,ex:'Sama seperti Fibonacci: dua angka terakhir dijumlahkan (13+21=34).',h:'Uji dulu: apakah 5 = 2+3? Kalau iya, polanya jumlah dua sebelumnya.'},
+// ===== LEVEL 2 : DEKOMPOSISI (10)
+{c:'dekomposisi',d:1,t:'order',q:'🧩 Bagaimana cara membuat teh manis? Susun langkahnya dengan urutan yang benar!',it:['Siapkan gelas','Masukkan kantong teh','Tambahkan gula','Tuangkan air panas','Aduk rata'],ex:'Masalah besar “membuat teh” dipecah menjadi 5 langkah kecil yang runtut — itulah dekomposisi.',h:'Apa yang harus disiapkan lebih dulu sebelum menuang air?'},
+{c:'dekomposisi',d:2,t:'order',q:'🧩 Susun langkah menyalakan komputer dengan benar!',it:['Colokkan kabel power','Nyalakan tombol CPU','Tunggu sistem booting','Masukkan password login','Buka aplikasi yang dibutuhkan'],ex:'Alur dari “listrik mati” ke “siap dipakai” harus urut dari sebab ke akibat.',h:'Mana yang mustahil dilakukan lebih dulu?'},
+{c:'dekomposisi',d:1,t:'mc',q:'Memecah masalah besar menjadi bagian-bagian kecil agar mudah diselesaikan disebut…',o:['Dekomposisi','Abstraksi','Kompilasi','Iterasi'],a:0,ex:'Dekomposisi = decomposition, yaitu memecah masalah kompleks menjadi sub-masalah sederhana.',h:'Ingat istilah dari materi Level 2.'},
+{c:'dekomposisi',d:2,t:'order',q:'🧩 Susun langkah mencuci tangan yang benar!',it:['Basahi tangan dengan air','Tuangkan sabun ke telapak','Gosok seluruh permukaan tangan','Bilas dengan air bersih','Keringkan dengan handuk'],ex:'Setiap langkah bergantung pada langkah sebelumnya — urutan menentukan hasil.',h:'Sabun harus ada dulu sebelum digosok.'},
+{c:'dekomposisi',d:2,t:'mc',q:'Kamu dapat tugas membuat presentasi. Langkah PERTAMA yang paling tepat adalah…',o:['Langsung memilih animasi keren','Menentukan tema & kerangka isi','Mencari gambar lucu dulu','Mengetik halaman kesimpulan'],a:1,ex:'Dengan dekomposisi, kita mulai dari bagian paling dasar: apa isinya, baru detail seperti animasi.',h:'Detail menyusul, inti dulu!'},
+{c:'dekomposisi',d:2,t:'mc',q:'Masalah: “Perpustakaan sekolah berantakan”. Mana yang merupakan DEKOMPOSISI yang benar?',o:['Memecahnya menjadi: buku, rak, peminjaman, dan pengembalian','Langsung membeli rak baru','Melarang siswa masuk perpustakaan','Menunggu masalah selesai sendiri'],a:0,ex:'Dekomposisi memandang masalah dari komponen-komponennya, bukan melompat ke solusi.',h:'Cari jawaban yang “memecah”, bukan yang “langsung jadi”.'},
+{c:'dekomposisi',d:3,t:'order',q:'🧩 Susun langkah mengirim email dengan urutan yang tepat!',it:['Buka aplikasi email','Klik tombol tulis / compose','Isi alamat tujuan & subjek','Tulis isi pesan','Klik tombol kirim'],ex:'Kirim adalah aksi terakhir setelah semua komponen pesan lengkap.',h:'Apa yang terjadi kalau kita menekan kirim sebelum menulis apa pun?'},
+{c:'dekomposisi',d:3,t:'mc',q:'Saat membuat mie instan, langkah mana yang TIDAK diperlukan?',o:['Menanam padi di sawah','Memasak air hingga mendidih','Memasukkan mie ke air','Menuang bumbu dan mengaduk'],a:0,ex:'Selain dekomposisi, kita juga pakai abstraksi: membuang detail yang tidak relevan dengan masalah.',h:'Cari langkah yang tidak berhubungan sama sekali.'},
+{c:'dekomposisi',d:3,t:'mc',q:'Proyek kelompok terasa berat. Menurut prinsip dekomposisi, cara terbaik adalah…',o:['Mengerjakan semalam sebelum dikumpulkan','Memecah tugas menjadi bagian kecil lalu dibagi ke tiap anggota','Meminta guru membatalkan tugas','Menyalin hasil kelompok lain'],a:1,ex:'Masalah besar terasa berat karena belum dipecah. Setelah dipecah, tiap bagian jadi ringan.',h:'Bagaimana cara makan gajah? Satu gigitan kecil sekaligus.'},
+{c:'dekomposisi',d:3,t:'order',q:'🧩 Susun persiapan pagi sebelum berangkat sekolah!',it:['Bangun tidur','Mandi dan berpakaian','Sarapan','Periksa jadwal & tas','Berangkat ke sekolah'],ex:'Rutinitas pagi adalah algoritma sehari-hari: urutan langkah menuju tujuan.',h:'Mulai dari yang paling awal dilakukan setelah mata terbuka.'},
+// ===== LEVEL 3 : ALGORITMA (10)
+{c:'algoritma',d:1,t:'maze',q:'🤖 Bantu robot mencapai baterai ⚡! Susun perintahnya lalu jalankan algoritma.',g:['S....','.###.','..G..','.###.','.....'],ex:'Algoritma kamu berhasil membawa robot ke tujuan: ⬇️⬇️➡️➡️. Algoritma = urutan instruksi yang tepat.',h:'Petakan dulu jalurnya sebelum menekan tombol.'},
+{c:'algoritma',d:1,t:'mc',q:'Urutan langkah yang jelas, runtut, dan dapat diulang untuk menyelesaikan masalah disebut…',o:['Variabel','Algoritma','Data','Kompilasi'],a:1,ex:'Algoritma adalah resep langkah demi langkah — seperti resep masakan.',h:'Istilahnya berasal dari nama ilmuwan: Al-Khwarizmi.'},
+{c:'algoritma',d:2,t:'mc',q:'Perintah robot: “JIKA ada tembok di depan, BELOK kiri; JIKA TIDAK, MAJU.” Ini contoh…',o:['Instruksi bersyarat (IF)','Perulangan tanpa batas','Dekomposisi','Pendeklarasian variabel'],a:0,ex:'Kata JIKA = IF, instruksi yang menjalankan aksi berdasarkan kondisi.',h:'Cari kata kunci “jika”.'},
+{c:'algoritma',d:2,t:'maze',q:'🤖 Labirin makin rumit! Pandu robot ke baterai ⚡.',g:['S.#..','..#.#','.....','#.#..','..G..'],ex:'Hebat! Kamu menyusun 8 instruksi yang semuanya tepat sasaran.',h:'Gunakan koridor tengah yang lebar.'},
+{c:'algoritma',d:2,t:'mc',q:'Membuat roti bakar: (1) olesi mentega (2) nyalakan toaster (3) masukkan roti (4) angkat. Urutan algoritma yang benar…',o:['1 – 2 – 3 – 4','2 – 3 – 1 – 4','3 – 2 – 4 – 1','2 – 1 – 3 – 4'],a:1,ex:'Algoritma harus logis: toaster dinyalakan, roti dimasukkan, dimasak, baru diolesi mentega.',h:'Mana yang mustahil: mengoles roti yang masih di dalam bungkus?'},
+{c:'algoritma',d:2,t:'mc',q:'Apa manfaat menyusun algoritma yang runtut?',o:['Membuat masalah jadi lebih rumit','Hasil lebih pasti dan mudah diulang siapa pun','Agar tidak perlu berpikir lagi','Supaya terlihat sibuk'],a:1,ex:'Algoritma yang baik memberi hasil yang sama setiap dijalankan oleh siapa pun.',h:'Pikirkan resep masakan: bisa diikuti siapa saja.'},
+{c:'algoritma',d:3,t:'mc',q:'“Ulangi 10 kali: maju 1 langkah” — cara menyingkat instruksi berulang seperti ini disebut…',o:['Loop / perulangan','Kondisi','Variabel','Komentar'],a:0,ex:'Pola yang berulang dapat diringkas dengan loop, membuat algoritma lebih efisien.',h:'Istilahnya juga dipakai saat berenang: berenang santai bolak-balik.'},
+{c:'algoritma',d:3,t:'maze',q:'🤖 Misinya panjang! Robot harus memutar jauh untuk mencapai baterai ⚡.',g:['S.....','.####.','......','.####.','....G.'],ex:'10 perintah tepat! Kamu resmi pantas disebut Algorithm Master.',h:'Jalur tengah bebas hambatan, tapi tujuannya di kiri bawah.'},
+{c:'algoritma',d:3,t:'mc',q:'Algoritma A butuh 4 langkah, algoritma B hanya 2 langkah, hasilnya sama. Mana yang lebih baik?',o:['A, karena lebih detail','B, karena lebih efisien','A, karena lebih panjang pasti lebih benar','Sama saja, tidak ada bedanya'],a:1,ex:'Algoritma yang baik mengejar efisiensi: hasil sama, langkah lebih sedikit, waktu lebih hemat.',h:'Lebih pendek + hasil sama = lebih baik.'},
+{c:'algoritma',d:4,t:'mc',q:'Robot berdiri di petak (0,0) menghadap timur (kanan). Perintah: MAJU 3 ➜ PUTAR KANAN ➜ MAJU 2. Di petak mana robot berakhir?',o:['(3, 2)','(2, 3)','(5, 0)','(3, −2)'],a:0,ex:'Maju 3 ke timur → (3,0). Putar kanan dari timur = selatan. Maju 2 → (3,2). Ini disebut tracing: menelusuri algoritma langkah demi langkah.',h:'Gambar petaknya di buku, lalu ikuti satu per satu.'},
+// ===== LEVEL 4 : LOGIKA (10)
+{c:'logika',d:1,t:'mc',q:'Diketahui A = 5, B = 10.<br><span class="mono">JIKA (A &lt; B) → tampil "MERAH"<br>JIKA TIDAK → tampil "BIRU"</span><br>Warna apa yang tampil?',o:['BIRU','MERAH','MERAH BIRU','Error'],a:1,ex:'5 < 10 bernilai BENAR, jadi blok IF dijalankan → MERAH tampil.',h:'Cek dulu: apakah 5 lebih kecil dari 10?'},
+{c:'logika',d:1,t:'mc',q:'Operator AND bernilai BENAR jika…',o:['Salah satu syarat benar','Kedua syarat benar','Tidak ada syarat yang benar','Salah satu syarat salah'],a:1,ex:'AND itu "ketat": semua syarat harus benar, jika satu saja salah hasilnya salah.',h:'AND = dan = keduanya.'},
+{c:'logika',d:2,t:'mc',q:'X = 7.<br><span class="mono">JIKA X &gt; 10 → "BESAR"<br>JIKA TIDAK → "KECIL"</span><br>Hasilnya?',o:['BESAR','KECIL','Error','Tidak ada output'],a:1,ex:'7 > 10 bernilai SALAH, maka program melompat ke blok ELSE → KECIL.',h:'Bandingkan 7 dengan 10.'},
+{c:'logika',d:2,t:'mc',q:'X = 8. Pernyataan <span class="mono">(X &gt; 5) AND (X &lt; 10)</span> bernilai…',o:['SALAH','BENAR','Error','Tidak dapat ditentukan'],a:1,ex:'8>5 benar DAN 8<10 benar → AND menghasilkan BENAR. Pola ini sering dipakai untuk cek rentang nilai.',h:'Nilai kedua sisi dulu, lalu gabungkan.'},
+{c:'logika',d:2,t:'mc',q:'NOT (3 > 5) bernilai…',o:['SALAH','BENAR','3','Error'],a:1,ex:'3>5 itu SALAH, lalu NOT membaliknya menjadi BENAR. NOT = pembalik.',h:'Balikkan dulu nilai di dalam kurung.'},
+{c:'logika',d:3,t:'mc',q:'Operator OR bernilai BENAR jika…',o:['Kedua syarat harus benar','Minimal satu syarat benar','Kedua syarat salah','Tidak pernah bernilai benar'],a:1,ex:'OR itu "longgar": cukup satu syarat benar, hasilnya sudah benar.',h:'OR = atau = salah satu saja cukup.'},
+{c:'logika',d:3,t:'mc',q:'X = 12. Pernyataan <span class="mono">(X habis dibagi 2) AND (X &gt; 10)</span> bernilai…',o:['SALAH','BENAR','12','Error'],a:1,ex:'12 habis dibagi 2 (benar) dan 12>10 (benar) → AND menghasilkan BENAR.',h:'Apakah 12 ÷ 2 bersisa? Apakah 12 lebih dari 10?'},
+{c:'logika',d:3,t:'mc',q:'Umur = 13.<br><span class="mono">JIKA umur ≥ 13 → "SMP"<br>JIKA TIDAK → "SD"</span><br>Output?',o:['SD','SMP','13','Error'],a:1,ex:'13 ≥ 13 bernilai BENAR (tanda ≥ mencakup angka yang sama), jadi outputnya SMP.',h:'≥ berarti "lebih besar ATAU sama dengan".'},
+{c:'logika',d:4,t:'mc',q:'A = BENAR, B = SALAH. Manakah pernyataan yang bernilai SALAH?',o:['A OR B','NOT A','A AND (NOT B)','B OR A'],a:1,ex:'NOT A membalik BENAR menjadi SALAH. Tiga pilihan lain bernilai BENAR.',h:'Hitung nilai NOT B juga: NOT SALAH = BENAR.'},
+{c:'logika',d:4,t:'mc',q:'🔥 Lampu menyala jika <span class="mono">(sabar AND tekun) OR pintar</span>. Andi TIDAK pintar, tapi sabar dan tekun. Lampu…',o:['Mati, karena ia tidak pintar','Menyala, karena sabar AND tekun = BENAR','Mati, karena butuh keduanya','Tidak dapat ditentukan'],a:1,ex:'sabar AND tekun = BENAR → BENAR OR SALAH = BENAR → lampu menyala. Logika gabungan butuh evaluasi bertahap!',h:'Selesaikan dulu bagian dalam kurung.'},
+// ===== LEVEL 5 : ABSTRAKSI (10)
+{c:'abstraksi',d:2,t:'group',q:'🗄️ HACKER DATA! Kelompokkan siswa berdasarkan KELAS. Klik data, lalu klik kelompoknya.',ks:['7A','7B'],it:[['Andi — laki-laki',0],['Budi — hobi futsal',1],['Citra — suka melukis',0],['Dedi — punya kucing',1],['Eka — tinggal dekat',0],['Fitri — koleksi komik',1]],ex:'Abstraksi = fokus pada satu atribut penting (kelas) dan mengabaikan sisanya (hobi, peliharaan).',h:'Hanya lihat atribut kelasnya!'},
+{c:'abstraksi',d:1,t:'mc',q:'Menggambar rute sekolah→rumah hanya berupa garis jalan besar tanpa detail rumah warga. Ini contoh…',o:['Dekomposisi','Debugging','Abstraksi','Kompilasi'],a:2,ex:'Abstraksi menyederhanakan sesuatu dengan hanya menyimpan informasi yang penting.',h:'Detail tak penting… dibuang.'},
+{c:'abstraksi',d:3,t:'group',q:'🗄️ Kelompokkan hewan berdasarkan KATEGORI!',ks:['Unggas','Ikan','Mamalia'],it:[['Ayam',0],['Salmon',1],['Kambing',2],['Bebek',0],['Lele',1],['Sapi',2]],ex:'Mengelompokkan berdasarkan ciri umum adalah cara abstraksi mengorganisasi data.',h:'Mana yang bertelur di darat vs di air?'},
+{c:'abstraksi',d:2,t:'mc',q:'Simbol 🚻 di pintu langsung dikenali sebagai toilet oleh siapa pun. Sistem ikon seperti ini membantu karena…',o:['Menyederhanakan informasi agar cepat dipahami','Membuat tempat terlihat lebih ramai','Menyembunyikan pintu dari orang asing','Hanya untuk yang bisa bahasa Inggris'],a:0,ex:'Satu simbol mewakili makna yang kompleks — itulah kekuatan abstraksi.',h:'Apa yang terjadi kalau semua informasi ditulis panjang?'},
+{c:'abstraksi',d:2,t:'mc',q:'Sistem data "Siswa" menyimpan nama, NIS, kelas — tetapi tidak menyimpan warna sepatu. Mengapa?',o:['Karena warna sepatu dianggap rahasia','Karena komputer tidak bisa menyimpan warna','Karena abstraksi hanya mengambil data yang penting untuk keperluan sistem','Karena data itu lupa ditambahkan'],a:2,ex:'Abstraksi memilih atribut relevan dengan tujuan sistem, sisanya diabaikan.',h:'Apa tujuan sistem data sekolah?'},
+{c:'abstraksi',d:3,t:'mc',q:'Peta kereta (metro) tidak mengikuti jarak dan bentuk jalan asli. Tujuan abstraksi ini…',o:['Memudahkan penumpang membaca rute & persimpangan','Menghemat biaya pencetakan','Menipu penumpang','Supaya terlihat artistik'],a:0,ex:'Yang penting bagi penumpang adalah urutan stasiun dan titik transit — bukan jarak sebenarnya.',h:'Apa informasi yang paling dibutuhkan penumpang?'},
+{c:'abstraksi',d:3,t:'mc',q:'Manakah representasi PALING abstrak untuk "daftar siswa dalam satu kelas"?',o:['Video rekaman suasana kelas','Denah tempat duduk lengkap','Daftar nama berurutan (list)','Foto tiap siswa satu per satu'],a:2,ex:'List hanya menyimpan esensi (nama & urutan) — paling sederhana dan paling mudah diolah komputer.',h:'Cari yang paling sederhana namun tetap berisi datanya.'},
+{c:'abstraksi',d:3,t:'mc',q:'Emoji 😊 bisa mewakili jutaan bentuk senyum manusia yang berbeda. Ini bekerja karena…',o:['Kebetulan saja','Abstraksi: satu simbol mewakili banyak kemungkinan','Semua orang tersenyum sama persis','Komputer yang tersenyum'],a:1,ex:'Simbol menggantikan detail — konsep yang sama dipakai ikon, peta, hingga variabel dalam pemrograman.',h:'Simbol = ringkasan dari banyak kemungkinan.'},
+{c:'abstraksi',d:2,t:'mc',q:'Untuk aplikasi ABSENSI, data siswa mana yang paling relevan diambil?',o:['Film kesukaan','NIS dan status kehadiran','Warna tas','Tinggi badan hari ini'],a:1,ex:'Abstraksi selalu berangkat dari tujuan: absensi butuh identitas + kehadiran, sisanya diabaikan.',h:'Apa yang benar-benar dicatat saat absensi?'},
+{c:'abstraksi',d:3,t:'group',q:'🗄️ Tantangan terakhir Hacker Data! Kelompokkan berdasarkan JENIS.',ks:['Buah','Sayur','Jajanan'],it:[['Pisang',0],['Donat',2],['Bayam',1],['Mangga',0],['Wortel',1],['Cireng',2]],ex:'Mengklasifikasikan objek ke dalam kategori adalah dasar dari struktur data!',h:'Buah tumbuh dari tanaman buah, sayur dimasak sebagai lauk.'},
+// ===== LEVEL 6 : CODE BREAKER (8)
+{c:'kode',d:1,t:'mc',q:'🔐 Sandi: <span class="mono">A=1, B=2, C=3 …</span><br>Pesan rahasia: <b class="mono" style="color:var(--ye)">3 - 15 - 4 - 5</b>',o:['COKE','CODE','CAFE','DODE'],a:1,ex:'3=C, 15=O, 4=D, 5=E → CODE. Setiap angka adalah posisi huruf dalam alfabet.',h:'Tulis alfabet dan nomori: A1 B2 C3 D4 E5…'},
+{c:'kode',d:2,t:'in',k:'DATA',q:'🔐 Sandi: <span class="mono">A=1, B=2, C=3 …</span><br>Dekripsi: <b class="mono" style="color:var(--ye)">4 - 1 - 20 - 1</b><br><small class="mut">Ketik jawabanmu satu kata, tanpa spasi.</small>',ex:'4=D, 1=A, 20=T, 1=A → DATA.',h:'20 cukup jauh di alfabet… T!'},
+{c:'kode',d:2,t:'mc',q:'🔐 Biner: setiap 4 digit = satu angka. <b class="mono" style="color:var(--ye)">1000 1001</b> = angka <span class="mono">8, 9</span> = huruf…<br><small class="mut">A=1, B=2, …</small>',o:['HA','IH','HI','AI'],a:2,ex:'1000 biner = 8 → H, 1001 biner = 9 → I. Membaca biner: 8-4-2-1.',h:'Nilai biner: digit paling kiri bernilai 8.'},
+{c:'kode',d:3,t:'in',k:'ACE',q:'🔐 Biner → desimal → huruf:<br><b class="mono" style="color:var(--ye)">0001 0011 0101</b><br><small class="mut">Kelompok: 1, 3, 5 → huruf apa?</small>',ex:'1=A, 3=C, 5=E → ACE. Pola biner dikonversi ke posisi alfabet.',h:'0001=1, 0011=3, 0101=5.'},
+{c:'kode',d:3,t:'mc',q:'🔐 Caesar Cipher geser +3: <span class="mono">C → F, A → D, T → W</span>.<br>Maka "CAT" disandikan menjadi…',o:['DBU','FDW','CAU','EDW'],a:1,ex:'Setiap huruf digeser 3 langkah: C+3=F, A+3=D, T+3=W → FDW. Sandi Caesar dipakai Julius Caesar 2000 tahun lalu!',h:'Geser SETIAP huruf maju 3 kali.'},
+{c:'kode',d:3,t:'mc',q:'🔐 Pesan disandikan dengan Caesar +3. Sandi: <b class="mono" style="color:var(--ye)">ORJLND</b>. Pesan aslinya…',o:['LOGIKA','LOHJKA','MORJLO','KOFGJZ'],a:0,ex:'Kebalikannya: geser mundur 3. O→L, R→O, J→G, L→I, N→K, D→A → LOGIKA!',h:'Kalau menyandikan maju 3, membukanya mundur 3.'},
+{c:'kode',d:4,t:'mc',q:'🔐 Kode simbol: <span class="mono">@=🌙, #=⭐, $=☀️</span>. Pesan terenkripsi: <b class="mono"># $ @</b> dibaca MUNDUR. Hasilnya…',o:['⭐ ☀️ 🌙','🌙 ☀️ ⭐','☀️ 🌙 ⭐','⭐ 🌙 ☀️'],a:1,ex:'# $ @ = ⭐☀️🌙, dibaca mundur menjadi 🌙☀️⭐. Enkripsi bisa menggabungkan substitusi + reversi!',h:'Terjemahkan dulu, lalu balik urutannya.'},
+{c:'kode',d:4,t:'in',k:'CODE',q:'🔐 Kode ASCII dalam biner (8 digit = 1 huruf):<br><b class="mono" style="color:var(--ye);font-size:.95rem">01000011 01001111 01000100 01000101</b><br><small class="mut">Nilai desimalnya: 67, 79, 68, 69. Ketik pesannya!</small>',ex:'67=C, 79=O, 68=D, 69=E → CODE. Inilah cara komputer menyimpan huruf: sebagai biner ASCII!',h:'65=A, jadi 67=C… lanjutkan polanya.'},
+// ===== LEVEL 7 : FINAL (6)
+{c:'final',d:4,t:'mc',q:'🔥 BOSS 1 — POLA: <b style="font-size:1.3rem">4, 7, 11, 16, 22, …</b>',o:['28','29','27','30'],a:1,ex:'Selisihnya naik: +3, +4, +5, +6, lalu +7 → 22+7 = 29.',h:'Hitung selisih antar angka, lalu cari polanya.'},
+{c:'final',d:4,t:'mc',q:'🔥 BOSS 2 — LOGIKA:<br><span class="mono" style="font-size:.9rem">JIKA (mengerjakan AND benar_semua) → nilai=100<br>JIKA TIDAK, JIKA (mengerjakan) → nilai=70<br>JIKA TIDAK → nilai=0</span><br>Budi mengerjakan tapi ada yang salah. Nilainya?',o:['100','70','0','85'],a:1,ex:'Syarat pertama gagal (benar_semua = salah), tapi syarat kedua (mengerjakan) terpenuhi → nilai 70. IF-ELSE IF dievaluasi berurutan!',h:'Cek syarat paling atas dulu.'},
+{c:'final',d:4,t:'mc',q:'🔥 BOSS 3 — KODE: sandi Caesar +2. Sandi terenkripsi: <b class="mono" style="color:var(--ye)">ECV</b>. Pesan aslinya…',o:['DAT','CAT','BAT','CAR'],a:1,ex:'Geser mundur 2: E→C, C→A, V→T → CAT. Boss ini menggabungkan pola shift dengan alfabet!',h:'+2 saat mengenkripsi berarti −2 saat mendekripsi.'},
+{c:'final',d:4,t:'order',q:'🔥 BOSS 4 — DEKOMPOSISI + STRATEGI: urutkan strategi jitu menaklukkan soal ujian yang sulit!',it:['Baca seluruh soal dengan tenang','Kerjakan soal yang mudah terlebih dahulu','Pecah soal sulit menjadi bagian-bagian kecil','Periksa kembali semua jawaban','Kumpulkan lembar jawaban'],ex:'Strategi master: baca → prioritas mudah → dekomposisi sulit → evaluasi → selesai. Ini persis cara programmer bekerja!',h:'Mana yang paling masuk akal dilakukan di menit-menit terakhir?'},
+{c:'final',d:3,t:'mc',q:'🔥 BOSS 5 — ABSTRAKSI: dalam game lari tanpa batas, karakter pemain digambar sangat sederhana. Alasan utamanya…',o:['Abstraksi: detail tak penting dihapus demi performa & fokus gameplay','Pembuat game terlalu malas','Komputer tidak mampu menggambar detail','Agar file game terlihat kecil'],a:0,ex:'Game fokus pada gerakan & skor — detail wajah tidak menambah gameplay. Abstraksi menjaga sistem tetap ringan dan efisien.',h:'Apa yang benar-benar penting dalam game lari?'},
+{c:'final',d:4,t:'maze',q:'🔥 BOSS TERAKHIR — ALGORITMA: labirin penjuru! Pandu robot ke pusat energi ⚡ dan kalahkan Final Boss!',g:['S....','.###.','....#','###..','G....'],ex:'10 perintah sempurna! 🔥 FINAL BOSS DEFEATED! Kamu telah membuktikan diri sebagai pemecah masalah sejati.',h:'Turun dulu lewat lorong kanan, lalu belok kiri di bawah.'}
+];
+
+/* ---------- Seed database ---------- */
+function seed(){
+  const names=[['Salsabila Putri','7A',1420],['Raka Aditya','7B',1285],['Dewi Anggraini','7A',1140],['Fajar Nugroho','7C',985],['Nabila Zahra','7B',870],['Bayu Setiawan','7A',760],['Kirana Maharani','7C',640],['Dimas Prakoso','7B',520],['Alya Rahmadani','7A',410],['Yoga Pratama','7C',260],['Intan Permata','7B',0],['Gilang Ramadhan','7C',0]];
+  const skillSeed=[{pola:[9,1],dekomposisi:[8,2],algoritma:[9,1],abstraksi:[7,3],logika:[8,2]},{pola:[8,2],dekomposisi:[7,3],algoritma:[8,2],abstraksi:[6,4],logika:[9,1]},{pola:[7,3],dekomposisi:[8,2],algoritma:[6,4],abstraksi:[8,2],logika:[7,3]},{pola:[6,4],dekomposisi:[6,3],algoritma:[5,5],abstraksi:[7,3],logika:[6,4]},{pola:[5,4],dekomposisi:[5,4],algoritma:[4,5],abstraksi:[5,4],logika:[5,5]},{pola:[4,4],dekomposisi:[4,4],algoritma:[3,5],abstraksi:[4,4],logika:[4,4]}];
+  const t=Date.now();
+  const students=names.map((n,i)=>{
+    const lvDone=Math.min(7,Math.floor(n[2]/220));
+    const sk=skillSeed[Math.min(i,skillSeed.length-1)];
+    const sk2={}; for(const k in sk) sk2[k]={c:sk[k][0],w:sk[k][1]};
+    return {id:'s'+(i+1),nama:n[0],nis:'7100'+String(101+i),kelas:n[1],xp:n[2],score:Math.round(n[2]*1.15),
+      done:lvDone,badges:i<3?['solver','logic','speed']:i<6?['solver','speed']:i<8?['solver']:[],
+      skill:sk2,fast:i<3?6:i<6?3:i<8?1:0,
+      per:Object.fromEntries(Array.from({length:lvDone},(_,k)=>[k+1,{xp:100+k*30,att:1,c:8,w:2,time:300+k*20}])),
+      hist:i<10?[{t:t-(i+1)*3600e3,ket:'Menyelesaikan Level '+Math.max(1,lvDone)}]:[],
+      last:i<10?t-(i+1)*600e3:0,status:i>=10?'off':'on'};
+  });
+  return {students,
+    custom:[],
+    qoff:[],
+    acts:[
+      {t:t-4*60e3,tx:'Salsabila Putri menyelesaikan Challenge Level 5',ok:1},
+      {t:t-9*60e3,tx:'Raka Aditya sedang memainkan Level 3',ok:1},
+      {t:t-16*60e3,tx:'Dewi Anggraini mendapatkan badge 🧠 Logic Master',ok:1},
+      {t:t-25*60e3,tx:'Fajar Nugroho mencapai Level 4',ok:1},
+      {t:t-40*60e3,tx:'Nabila Zahra menjawab benar dengan COMBO x3 🔥',ok:1}
+    ]};
+}
+let db;
+try{db=JSON.parse(localStorage.getItem(KEY))||seed();}catch(e){db=seed();}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(db));}catch(e){}};
+
+/* ================================================================
+   UTIL
+================================================================ */
+const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const fmtT=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+function toast(msg){const t=document.createElement('div');t.className='toast';t.innerHTML=msg;$('#toasts').appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='.4s';setTimeout(()=>t.remove(),400);},3200);}
+function popOn(id){$('#'+id).classList.add('on');}
+function popOff(id){$('#'+id).classList.remove('on');}
+function logAct(tx){db.acts.unshift({t:Date.now(),tx});db.acts=db.acts.slice(0,60);save();}
+function relTime(t){const d=Math.floor((Date.now()-t)/1000);if(d<60)return'baru saja';if(d<3600)return Math.floor(d/60)+' mnt lalu';if(d<86400)return Math.floor(d/3600)+' jam lalu';return Math.floor(d/86400)+' hari lalu';}
+function allQ(){return Q.concat(db.custom.map((c,i)=>({...c,ci:i,custom:true}))).filter(q=>!db.qoff.includes(q.q));}
+function flyXP(txt,x,y){const e=document.createElement('div');e.className='xpfly';e.textContent=txt;e.style.left=(x-30)+'px';e.style.top=(y-20)+'px';document.body.appendChild(e);setTimeout(()=>e.remove(),1100);}
+
+/* ---------- Confetti ---------- */
+const cc=$('#confettiC'),cx=cc.getContext('2d');let cps=[],cAnim=null;
+function confetti(n=140){
+  cc.width=innerWidth;cc.height=innerHeight;
+  const cols=['#22d3ee','#a78bfa','#fbbf24','#f472b6','#34d399','#fff'];
+  for(let i=0;i<n;i++)cps.push({x:Math.random()*cc.width,y:-20-Math.random()*cc.height*.4,w:5+Math.random()*7,h:8+Math.random()*10,
+    c:cols[i%cols.length],vy:2+Math.random()*3.5,vx:(Math.random()-.5)*2,r:Math.random()*Math.PI,vr:(Math.random()-.5)*.25,shape:i%3});
+  if(!cAnim)cLoop();
+}
+function cLoop(){
+  cx.clearRect(0,0,cc.width,cc.height);
+  cps=cps.filter(p=>p.y<cc.height+30);
+  cps.forEach(p=>{p.y+=p.vy;p.x+=p.vx+Math.sin(p.y*.02)*.8;p.r+=p.vr;
+    cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.fillStyle=p.c;
+    if(p.shape===0)cx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+    else if(p.shape===1){cx.beginPath();cx.arc(0,0,p.w/2,0,7);cx.fill();}
+    else{cx.beginPath();cx.moveTo(0,-p.h/2);cx.lineTo(p.w/2,p.h/2);cx.lineTo(-p.w/2,p.h/2);cx.closePath();cx.fill();}
+    cx.restore();});
+  if(cps.length)cAnim=requestAnimationFrame(cLoop);else{cAnim=null;cx.clearRect(0,0,cc.width,cc.height);}
+}
+
+/* ---------- Latar partikel ---------- */
+(function fx(){
+  const box=$('#fx'),icons=['0','1','</>','🧩','⚙️','{}','01','⌘','∆','Σ','10','{ }','∴'];
+  for(let i=0;i<16;i++){const e=document.createElement('span');e.className='fx-i';
+    e.textContent=icons[i%icons.length];
+    e.style.left=Math.random()*100+'%';e.style.fontSize=(11+Math.random()*16)+'px';
+    e.style.color=['#22d3ee','#a78bfa','#fbbf24'][i%3];e.style.opacity=.25;
+    e.style.animationDuration=(14+Math.random()*16)+'s';e.style.animationDelay=(-Math.random()*20)+'s';
+    box.appendChild(e);}
+})();
+
+/* ================================================================
+   ROUTER & AUTH
+================================================================ */
+function go(id){$$('.view').forEach(v=>v.classList.remove('on'));$('#'+id).classList.add('on');window.scrollTo(0,0);}
+let me=null;
+function loginSiswa(){
+  const nm=$('#in-nama').value.trim(),nis=$('#in-nis').value.trim(),kl=$('#in-kelas').value;
+  if(!nm||!nis){$('#login-err').style.display='block';return;}
+  $('#login-err').style.display='none';
+  let st=db.students.find(s=>s.nis===nis);
+  if(st){
+    if(st.nama.toLowerCase()!==nm.toLowerCase()){toast('⚠️ NIS sudah terdaftar dengan nama lain. Gunakan NIS sendirimu!');return;}
+    toast('👋 Selamat datang kembali, <b>'+esc(st.nama)+'</b>! Progresmu dimuat.');
+  }else{
+    st={id:'s'+Date.now(),nama:nm,nis,kelas:kl,xp:0,score:0,done:0,badges:[],fast:0,
+      skill:{},per:{},hist:[],last:Date.now(),status:'on'};
+    db.students.push(st);logAct(nm+' ('+kl+') bergabung sebagai agen baru 🎉');
+    toast('🎉 Akun baru dibuat. Selamat berpetualang!');
+  }
+  st.last=Date.now();st.status='on';save();me=st;
+  go('v-app');showSub('dash');
+}
+function loginAdmin(){
+  if($('#ad-user').value.trim()==='admin'&&$('#ad-pass').value==='admin123'){
+    go('v-admin');showA('astat');toast('🔓 Selamat datang, Admin!');
+  }else $('#admin-err').style.display='block';
+}
+function logout(){
+  if(me){me.last=Date.now()-11*60e3;save();}
+  me=null;go('v-landing');
+}
+function showSub(s){$$('.subview').forEach(v=>v.classList.remove('on'));$('#s-'+s).classList.add('on');
+  $$('.snv').forEach(b=>b.classList.toggle('act',b.dataset.s===s));
+  if(s==='dash')renderDash();if(s==='play')renderLevelMap('p-lvmap',true);
+  if(s==='board'){fillKelasFilter('#lb-filter');renderBoard();}
+  if(s==='badges')renderBadges();if(s==='hasil')renderHasil();
+  window.scrollTo(0,0);}
+function showA(s){$$('.asub').forEach(v=>v.classList.remove('on'));$('#'+s).classList.add('on');
+  $$('.anv').forEach(b=>b.classList.toggle('act',b.dataset.a===s));
+  if(s==='astat')renderAStat();if(s==='astud'){fillKelasFilter('#fs-kelas',true);renderAStudents();}
+  if(s==='amon')renderMonitor();if(s==='aanal')renderAnalysis();if(s==='arekap')renderRekap();
+  if(s==='aman')renderManage();window.scrollTo(0,0);}
+function fillKelasFilter(sel,all){
+  const ks=[...new Set(db.students.map(s=>s.kelas))].sort();
+  $(sel).innerHTML=(all?'<option value="">Semua Kelas</option>':'<option value="">Semua Kelas</option>')+ks.map(k=>'<option>'+k+'</option>').join('');}
+
+/* ================================================================
+   DASHBOARD SISWA
+================================================================ */
+function levelSiswa(){return Math.min(7,Math.floor(me.xp/400)+1);}
+function xpProg(){return (me.xp%400)/400;}
+function rankOf(st){const sorted=[...db.students].sort((a,b)=>b.xp-a.xp);return sorted.findIndex(s=>s.id===st.id)+1;}
+function renderDash(){
+  $('#d-nama').textContent=me.nama;$('#d-nis').textContent=me.nis;$('#d-kelas').textContent=me.kelas;
+  $('#d-sub').textContent='Level '+levelSiswa()+' · '+me.kelas+' · Ranking #'+rankOf(me);
+  const p=Math.round(xpProg()*100);
+  $('#d-lvlabel').textContent='LEVEL '+levelSiswa();
+  $('#d-lvpct').textContent=p+'% menuju Level '+Math.min(7,levelSiswa()+1);
+  setTimeout(()=>$('#d-lvbar').style.width=p+'%',60);
+  const ak=(me.correctN+me.wrongN)?Math.round(me.correctN/(me.correctN+me.wrongN)*100):0;
+  $('#d-stats').innerHTML=[
+    ['⚡ XP',me.xp,'var(--cy)'],['🎯 Skor',me.score,'var(--ye)'],
+    ['✅ Challenge',countChal(),'var(--gr)'],['🎖️ Badge',me.badges.length,'var(--pk)'],
+  ].map(x=>'<div class="stat card"><span class="ic">'+x[0].split(' ')[0]+'</span><b style="color:'+x[2]+'">'+x[1]+'</b><span>'+x[0].slice(2)+'</span></div>').join('');
+  renderLevelMap('d-lvmap',true);
+}
+function countChal(){let n=0;for(const k in me.per)n+=me.per[k].c||0;return n;}
+function renderLevelMap(id,click){
+  $('#'+id).innerHTML=LEVELS.map(L=>{
+    const done=me.done>=L.id,open=me.done>=L.id-1;
+    const st=me.per[L.id];const stars=st?(st.w===0?'⭐⭐⭐':st.w<=2?'⭐⭐':'⭐'):'';
+    return '<div class="lvcard card '+(done?'done':'')+' '+(open?'':'lock')+'" '+(click&&open?'onclick="openLevel('+L.id+')" style="cursor:pointer"':'')+'>'+
+      '<div class="num">'+(done?'✅':open?L.ikon:'🔒')+'</div>'+
+      '<div><small>LEVEL '+L.id+'</small><h4>'+L.ikon+' '+L.nama+'</h4><small class="mut">'+L.desc+' · '+(CATS[L.cat]||'')+'</small>'+
+      (stars?'<div class="stars">'+stars+'</div>':'')+'</div>'+
+      (click&&open?'<span class="go">'+(done?'↻':'▶')+'</span>':'')+'</div>';
+  }).join('');
+}
+
+/* ================================================================
+   GAME ENGINE
+================================================================ */
+let S=null,timerIv=null;
+function openLevel(id){
+  const L=LEVELS.find(l=>l.id===id);
+  let qs=allQ().filter(q=>q.lv===id||(id<=5&&q.c===L.cat&&q.lv===undefined)||(id===7&&q.c==='final'));
+  qs=qs.filter(q=>q.lv===id||q.c===L.cat);
+  if(id<=5)qs=qs.filter(q=>q.c===L.cat);
+  qs.sort((a,b)=>(a.d||1)-(b.d||1));
+  if(!qs.length){toast('⚠️ Belum ada challenge aktif di level ini.');return;}
+  S={L,qs:[...qs],i:0,lives:3,sxp:0,combo:0,fast:0,ok:0,no:0,t0:Date.now(),total:L.id===7?120:null,tleft:120,answered:false};
+  showSub('play');renderQ();
+}
+function qTime(q){return q.timer||(48-(q.d-1)*6);}
+function renderQ(){
+  clearInterval(timerIv);
+  if(S.i>=S.qs.length){endLevel(true);return;}
+  S.answered=false;
+  const q=S.qs[S.i];
+  const L=S.L;
+  let timerHtml='';
+  if(S.total!==null){timerHtml='<div style="display:flex;justify-content:space-between;font-size:.85rem"><span class="mut">⏱️ Waktu tersisa:</span><b id="g-timer" style="color:var(--rd)">'+fmtT(S.total)+'</b></div><div class="timerline" id="g-tl"><i style="width:100%"></i></div>';}
+  else{timerHtml='<div style="display:flex;justify-content:space-between;font-size:.85rem"><span class="mut">⏱️ Timer soal: '+qTime(q)+'s</span><b id="g-timer" style="color:var(--cy)"></b></div><div class="timerline" id="g-tl"><i style="width:100%"></i></div>';}
+  const head='<div class="ghead card"><div><span class="tag" style="border-color:'+L.warn+'55;color:'+L.warn+'">'+L.ikon+' LEVEL '+L.id+' — '+L.nama+'</span>'+
+    '<div class="mut" style="font-size:.75rem;margin-top:.3rem">Soal '+(S.i+1)+'/'+S.qs.length+' · '+DIFFNAMA[q.d]+'</div></div>'+
+    '<div style="display:flex;gap:.9rem;align-items:center;flex-wrap:wrap"><span class="lives" id="g-lives">'+'❤️'.repeat(S.lives)+'🤍'.repeat(3-S.lives)+'</span>'+
+    '<span class="combo" id="g-combo"></span><b style="color:var(--ye)">⚡ <span id="g-xp">'+S.sxp+'</span> XP</b></div></div>';
+  const body='<div class="qcard card"><div class="qmeta"><span class="tag">'+(CATS[q.c]||'')+'</span><span class="tag chipd '+DIFFCHIP[q.d]+'">'+DIFFNAMA[q.d]+'</span></div>'+
+    '<div class="qtext">'+q.q+'</div><div id="q-body"></div><div id="fb" class="feedback"></div></div>';
+  $('#g-area').innerHTML=head+'<div class="timerline-wrap">'+timerHtml+'</div>'+body;
+  window.scrollTo({top:$('#g-area').offsetTop-10,behavior:'smooth'});
+  const qb=$('#q-body');
+  if(q.t==='mc'||q.t===undefined){
+    qb.innerHTML='<div class="opts">'+q.o.map((o,i)=>'<button class="opt'+(/[\u{1F300}-\u{1FAFF}]/u.test(o)&&o.length<=8?' big':'')+'" onclick="ansMC('+i+')">'+esc(o)+'</button>').join('')+'</div>';
+    startQT(qTime(q));
+  }else if(q.t==='in'){
+    qb.innerHTML='<div class="gcenter"><input class="inp-code card" id="cin" placeholder="JAWABAN?" maxlength="12" onkeydown="if(event.key===\'Enter\')ansIn()"></div><div class="gactions"><button class="btn btn-p" onclick="ansIn()">🔓 Buka Kode</button></div>';
+    startQT(qTime(q));setTimeout(()=>$('#cin')&&$('#cin').focus(),300);
+  }else if(q.t==='order'){
+    S.pool=shuffle(q.it.map((t,i)=>({t,i})));S.seq=[];
+    qb.innerHTML='<small class="mut">💡 Klik langkah untuk memasukkannya ke urutan · klik di urutan untuk mengembalikan · gunakan ▲▼ untuk menggeser</small>'+
+      '<div class="pool" id="od-pool"></div><div class="seq" id="od-seq"></div>'+
+      '<div class="gactions"><button class="btn btn-p" onclick="checkOrder()">✅ Periksa Urutan</button></div>';
+    drawOrder();
+  }else if(q.t==='group'){
+    S.gsel=null;S.gplace={};q.ks.forEach((_,i)=>S.gplace[i]=[]);
+    qb.innerHTML='<small class="mut">💡 Klik sebuah data, lalu klik kotak kelompok tujuannya. Klik data yang sudah masuk kotak untuk mengeluarkannya.</small>'+
+      '<div class="pool" id="gr-pool"></div><div class="gzones" id="gr-zones"></div>'+
+      '<div class="gactions"><button class="btn btn-p" id="gr-check" onclick="checkGroup()" disabled>✅ Periksa Pengelompokan</button></div>';
+    drawGroup();
+  }else if(q.t==='maze'){
+    S.cmds=[];S.running=false;
+    qb.innerHTML='<div class="mzgrid" id="mz"></div>'+
+      '<div class="gcenter"><div class="pad">'+
+      '<button onclick="addCmd(0)">⬆️</button><button onclick="addCmd(1)">⬆️</button><button onclick="addCmd(2)">➡️</button>'+
+      '<button onclick="addCmd(3)">⬅️</button><button onclick="addCmd(4)">⬇️</button><button onclick="addCmd(5)">⬇️</button></div>'+
+      '<small class="mut">Baris 1: maju · Baris 2: belok</small></div>'+
+      '<div class="cmds" id="mz-cmds"></div>'+
+      '<div class="gactions"><button class="btn btn-p" onclick="runMaze()">▶ JALANKAN ALGORITMA</button><button class="btn btn-g" onclick="clearCmds()">🗑️ Reset</button></div>';
+    drawMaze();
+  }
+}
+/* --- timer --- */
+function startQT(sec){
+  S.tmax=sec;S.tl=sec;
+  timerIv=setInterval(()=>{
+    if(S.total!==null){S.total--;S.tleft=S.total;}
+    else S.tl--;
+    const left=S.total!==null?S.total:S.tl,max=S.total!==null?120:S.tmax;
+    const tl=$('#g-tl');if(!tl){clearInterval(timerIv);return;}
+    tl.querySelector('i').style.width=Math.max(0,left/max*100)+'%';
+    tl.classList.toggle('hot',left<=max*.3);
+    const tm=$('#g-timer');if(tm)tm.textContent=fmtT(Math.max(0,left));
+    if(left<=0){clearInterval(timerIv);timeUp();}
+  },1000);
+}
+function timeUp(){if(S.answered)return;S.answered=true;
+  const q=S.qs[S.i];
+  const ansTxt=q.t==='mc'?q.o[q.a]:(q.t==='in'?q.k:(q.t==='order'?q.it.join(' → '):(q.t==='group'?q.ks.join(' / '):'lihat pola jalan')));
+  feedback(false,'⏰ Waktu habis!','Jawaban yang benar: <b>'+esc(ansTxt)+'</b>. <br>💡 '+q.h+'<br><br><b>Penjelasan:</b> '+q.ex,true);
+  applyWrong();
+}
+function applyWrong(){
+  S.no++;S.combo=0;S.sxp=Math.max(0,S.sxp-20);updGHud();
+  const st=me;st.wrongN=(st.wrongN||0)+1;
+  const q=S.qs[S.i];st.skill[q.c]=st.skill[q.c]||{c:0,w:0};st.skill[q.c].w++;
+  logAct(st.nama+' menjawab salah di Level '+S.L.id+' ('+(CATS[q.c]||'')+')');
+  save();
+}
+function updGHud(){
+  const l=$('#g-lives');if(l)l.innerHTML='❤️'.repeat(S.lives)+'🤍'.repeat(Math.max(0,3-S.lives));
+  const x=$('#g-xp');if(x)x.textContent=S.sxp;
+  const c=$('#g-combo');
+  if(c){if(S.combo>=2){c.style.display='inline-block';c.textContent='🔥 COMBO x'+S.combo;}else c.style.display='none';}
+}
+/* --- jawab MC & input --- */
+function ansMC(i){
+  if(S.answered)return;S.answered=true;clearInterval(timerIv);
+  const q=S.qs[S.i],btns=$$('#q-body .opt');
+  btns.forEach((b,j)=>{b.disabled=true;if(j===q.a)b.classList.add('ok');});
+  if(i===q.a)onCorrect();else{btns[i].classList.add('no');
+    feedback(false,'💡 Coba pikirkan kembali!','💡 Petunjuk: '+q.h+'<br><b>Penjelasan:</b> '+q.ex);
+    applyWrong();}
+}
+function ansIn(){
+  if(S.answered)return;S.answered=true;clearInterval(timerIv);
+  const q=S.qs[S.i],v=($('#cin').value||'').trim().toUpperCase();
+  if(v===q.k.toUpperCase())onCorrect();
+  else{feedback(false,'💡 Belum tepat!','💡 Petunjuk: '+q.h+'<br><b>Penjelasan:</b> '+q.ex);applyWrong();}
+}
+function onCorrect(){
+  const q=S.qs[S.i];
+  const left=S.total!==null?S.total:S.tl,fast=left>S.tmax*.6;
+  const base=q.poin||DIFFXP[q.d]||100;
+  let bonus=0,msg='';
+  S.combo++;
+  if(fast){bonus+=50;S.fast++;msg+='<div style="margin:.3rem 0;color:var(--gr)">⚡ Bonus kecepatan +50 XP!</div>';}
+  if(S.combo>=2){const cb=25*(Math.min(S.combo,5)-1);bonus+=cb;msg+='<div style="color:var(--ye)">🔥 COMBO x'+S.combo+' — bonus +'+cb+' XP!</div>';}
+  S.ok++;S.sxp+=base+bonus;
+  me.correctN=(me.correctN||0)+1;me.skill[q.c]=me.skill[q.c]||{c:0,w:0};me.skill[q.c].c++;
+  logAct(me.nama+' menjawab benar di Level '+S.L.id+' (+'+(base+bonus)+' XP)');
+  flyXP('+'+(base+bonus),innerWidth/2,innerHeight*.35);
+  feedback(true,'🎉 BENAR! Hebat!',msg+'<b>Penjelasan:</b> '+q.ex);
+  updGHud();save();checkBadges();
+}
+function feedback(good,title,body,noHint){
+  const fb=$('#fb');fb.className='feedback on '+(good?'good':'bad');
+  fb.innerHTML='<h4>'+(good?'🎉 '+title:'⚠️ '+title)+'</h4><p>'+body+'</p>'+
+    '<div style="margin-top:1rem"><button class="btn '+(good?'btn-p':'btn-y')+'" onclick="nextQ()">'+(S.i>=S.qs.length-1?'🏁 Selesaikan Level':'Lanjut ➜')+'</button></div>';
+  fb.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function nextQ(){S.i++;renderQ();}
+
+/* --- ORDER (drag & drop + klik) --- */
+function drawOrder(){
+  $('#od-pool').innerHTML=S.pool.map(it=>'<button class="pit" draggable="true" ondragstart="dragIt(event,'+it.i+')" onclick="pick('+it.i+')">'+esc(it.t)+'</button>').join('')||'<span class="mut" style="font-size:.8rem">Semua langkah sudah diurutkan ✔</span>';
+  $('#od-seq').innerHTML=S.seq.map((it,idx)=>
+    '<div class="sit"><span class="n">'+(idx+1)+'</span><span style="flex:1">'+esc(it.t)+'</span>'+
+    '<span class="mv"><button onclick="moveSeq('+idx+',-1)" title="Naik">▲</button><button onclick="moveSeq('+idx+',1)" title="Turun">▼</button></span>'+
+    '<button class="btn btn-warn" style="padding:.2rem .6rem;min-height:0;font-size:.8rem" onclick="unpick('+idx+')">✕</button></div>').join('')||'<span class="mut" style="font-size:.8rem;padding:.4rem">Belum ada langkah — mulai klik langkah pertama!</span>';
+}
+function pick(i){const idx=S.pool.findIndex(p=>p.i===i);if(idx<0)return;S.seq.push(S.pool.splice(idx,1)[0]);drawOrder();}
+function unpick(idx){S.pool.push(S.seq.splice(idx,1)[0]);drawOrder();}
+function moveSeq(idx,d){const n=idx+d;if(n<0||n>=S.seq.length)return;[S.seq[idx],S.seq[n]]=[S.seq[n],S.seq[idx]];drawOrder();}
+function dragIt(ev,i){ev.dataTransfer.setData('text/plain',i);}
+ $('#v-app').addEventListener('dragover',e=>{if(e.target.id==='od-seq')e.preventDefault();});
+document.addEventListener('drop',e=>{if(e.target.id==='od-seq'){e.preventDefault();pick(+e.dataTransfer.getData('text/plain'));}});
+function checkOrder(){
+  if(S.answered)return;
+  const q=S.qs[S.i];
+  if(S.seq.length<q.it.length){toast('⚠️ Belum semua langkah dimasukkan!');return;}
+  S.answered=true;clearInterval(timerIv);
+  if(S.seq.every((it,i)=>it.i===i))onCorrect();
+  else{feedback(false,'💡 Coba pikirkan kembali langkahnya.','💡 Petunjuk: '+q.h+'<br>Tanyakan: <i>langkah mana yang harus terjadi lebih dulu?</i><br><br><b>Penjelasan:</b> '+q.ex);applyWrong();}
+}
+/* --- GROUP --- */
+function drawGroup(){
+  const q=S.qs[S.i];
+  $('#gr-pool').innerHTML=q.it.map((it,i)=>S.placed&&S.placed.includes(i)?'':'<button class="pit'+(S.gsel===i?' sel':'')+'" onclick="gselItem('+i+')">'+esc(it[0])+'</button>').join('')||'<span class="mut" style="font-size:.8rem">Semua data sudah dikelompokkan ✔</span>';
+  $('#gr-zones').innerHTML=q.ks.map((k,zi)=>
+    '<div class="gz'+(S.gsel!==null?' hit':'')+'" onclick="gdrop('+zi+')"><h5>📂 '+esc(k)+'</h5>'+
+    (S.gplace[zi].map(i=>'<button class="pit'+(S.gResult?' '+(q.it[i][1]===zi?'ok':'no'):'')+'" onclick="gout('+zi+','+i+')">'+esc(q.it[i][0])+'</button>').join('')||'')+'</div>').join('');
+  $('#gr-check').disabled=!S.placed||S.placed.length<q.it.length;
+}
+function gselItem(i){S.gsel=S.gsel===i?null:i;drawGroup();}
+function gdrop(zi){if(S.gsel===null)return;
+  S.gplace[zi].push(S.gsel);S.placed=(S.placed||[]).concat(S.gsel);S.gsel=null;drawGroup();}
+function gout(zi,i){if(S.gResult)return;S.gplace[zi]=S.gplace[zi].filter(x=>x!==i);S.placed=S.placed.filter(x=>x!==i);drawGroup();}
+function checkGroup(){
+  if(S.answered)return;
+  const q=S.qs[S.i];
+  S.gResult=true;S.answered=true;clearInterval(timerIv);drawGroup();
+  const allOk=q.it.every((it,i)=>{const zi=S.gplace.findIndex(a=>a.includes(i));return zi===it[1];});
+  if(allOk)onCorrect();
+  else{const salah=q.it.filter((it,i)=>{const zi=S.gplace.findIndex(a=>a.includes(i));return zi!==it[1];}).length;
+    feedback(false,'💡 Hampir! '+salah+' data salah tempat.','💡 Petunjuk: '+q.h+'<br>Data yang salah ditandai merah — klik untuk mengeluarkannya dan perbaiki!<br><br><b>Penjelasan:</b> '+q.ex);applyWrong();
+    S.answered=true;S.gResult=true;}
+}
+/* --- MAZE --- */
+const ARROW=['⬆️','⬆️','➡️','⬅️','⬇️','⬇️'],MV=[[0,-1],[0,-1],[1,0],[-1,0],[0,1],[0,1]];
+function addCmd(c){if(S.running||S.answered)return;if(S.cmds.length>=16)return;S.cmds.push(c);drawCmds();}
+function clearCmds(){if(S.running)return;S.cmds=[];drawCmds();drawMaze();}
+function drawCmds(){$('#mz-cmds').innerHTML=S.cmds.map((c,i)=>'<button class="cmd" onclick="delCmd('+i+')" title="Hapus">'+ARROW[c]+'</button>').join('')||'<span class="mut" style="font-size:.8rem">Belum ada perintah. Klik tombol panah!</span>';}
+function delCmd(i){if(S.running)return;S.cmds.splice(i,1);drawCmds();}
+function drawMaze(){
+  const q=S.qs[S.i],g=q.g,rows=g.length,cols=g[0].length;
+  let html='';
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+    const ch=g[r][c];
+    html+='<div class="mzc'+(ch==='#'?' w':ch==='G'?' g':'')+'" id="c-'+r+'-'+c+'">'+(ch==='G'?'⚡':'')+'</div>';
+  }
+  html+='<div id="mzbot">🤖</div>';
+  const mz=$('#mz');mz.style.gridTemplateColumns='repeat('+cols+',1fr)';mz.innerHTML=html;
+  const s=findC(g,'S');
+  placeBot(s.c,s.r);
+}
+function findC(g,ch){for(let r=0;r<g.length;r++)for(let c=0;c<g[0].length;c++)if(g[r][c]===ch)return{r,c};return{r:0,c:0};}
+function placeBot(c,r){const b=$('#mzbot');if(!b)return;
+  b.style.left=((c+.5)/S.qs[S.i].g[0].length*100)+'%';b.style.top=((r+.5)/S.qs[S.i].g.length*100)+'%';}
+function runMaze(){
+  if(S.running||S.answered)return;
+  if(!S.cmds.length){toast('⚠️ Susun dulu perintahnya dengan tombol panah!');return;}
+  S.running=true;const g=S.qs[S.i].g;let pos=findC(g,'S');
+  $$('.mzc.v').forEach(e=>e.classList.remove('v'));
+  let step=0;
+  const iv=setInterval(()=>{
+    if(step>=S.cmds.length){
+      clearInterval(iv);S.running=false;
+      if(g[pos.r][pos.c]==='G'){S.answered=true;clearInterval(timerIv);onCorrect();}
+      else{mazeFail('🤖 Robot berhenti tapi belum sampai baterai. Periksa lagi jalurnya!');}
+      return;
+    }
+    const [dc,dr]=MV[S.cmds[step]];step++;
+    const nr=pos.r+dr,nc=pos.c+dc;
+    if(nr<0||nr>=g.length||nc<0||nc>=g[0].length||g[nr][nc]==='#'){
+      clearInterval(iv);S.running=false;
+      const b=$('#mzbot');b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),450);
+      mazeFail('💥 Robot menabrak tembok di langkah ke-'+step+'! Perbaiki perintahmu.');
+      return;
+    }
+    pos={r:nr,c:nc};placeBot(nc,nr);
+    const cell=$('#c-'+nr+'-'+nc);if(cell&&g[nr][nc]!=='.')0;else if(cell)cell.classList.add('v');
+  },380);
+}
+function mazeFail(msg){
+  toast('⚠️ '+msg+' <br><small>Ayo coba susun ulang — nyawa masih aman, tapi waktu terus berjalan!</small>');
+  logAct(me.nama+' mencoba menjalankan algoritma di Level '+S.L.id+'… belum berhasil');
+  save();
+}
+/* --- akhir level --- */
+function endLevel(win){
+  clearInterval(timerIv);
+  const L=S.L,st=me;
+  const timeSpent=Math.round((Date.now()-S.t0)/1000);
+  if(win){
+    const first=!(st.per[L.id]);
+    const acc=S.ok+S.no?Math.round(S.ok/(S.ok+S.no)*100):0;
+    const stars=S.no===0?'⭐⭐⭐':S.no<=2?'⭐⭐':'⭐';
+    if(first||S.sxp>(st.per[L.id]?.xp||0)){
+      st.per[L.id]={xp:S.sxp,att:(st.per[L.id]?.att||0)+1,c:st.per[L.id]?st.per[L.id].c+S.ok:S.ok,w:st.per[L.id]?st.per[L.id].w+S.no:S.no,time:timeSpent};
+    }else if(st.per[L.id])st.per[L.id].att++;
+    st.xp+=S.sxp;st.score+=Math.round(S.sxp*1.15);
+    if(st.done<L.id)st.done=L.id;
+    st.hist.unshift({t:Date.now(),ket:'Menyelesaikan Level '+L.id+' — '+S.ok+' benar / '+S.no+' salah · '+fmtT(timeSpent)});
+    st.hist=st.hist.slice(0,30);
+    logAct(st.nama+' menyelesaikan Level '+L.id+' ('+L.nama+') dengan '+S.sxp+' XP');
+    save();
+    const allDone=st.done>=7;
+    const title=allDone?(L.id===7?'🔥 FINAL BOSS DEFEATED!':'🏆 LEVEL SELESAI!'):'🏆 LEVEL SELESAI!';
+    $('#pl-ic').textContent=allDone?'👑':'🎉';
+    $('#pl-title').textContent=title;
+    $('#pl-body').innerHTML=
+      '<div class="resrow"><span>'+DIFFCHIP?'':'</span><span>Level</span><b>'+L.ikon+' '+L.nama+'</b></div>'+
+      '<div class="resrow"><span>⚡ XP didapat</span><b>+'+S.sxp+'</b></div>'+
+      '<div class="resrow"><span>✅ Benar / ❌ Salah</span><b>'+S.ok+' / '+S.no+'</b></div>'+
+      '<div class="resrow"><span>🎯 Akurasi</span><b>'+acc+'%</b></div>'+
+      '<div class="resrow"><span>⏱️ Waktu</span><b>'+fmtT(timeSpent)+'</b></div>'+
+      '<div class="resrow"><span>⭐ Rating</span><b>'+stars+'</b></div>';
+    $('#pl-btn').textContent=allDone?'👑 Lihat Hasil Akhir':'Lanjut ➜';
+    $('#pl-btn').onclick=()=>{
+      popOff('pop-level');
+      if(allDone){showVictory();}else{S=null;showSub('dash');}
+    };
+    popOn('pop-level');
+    checkBadges();
+    if(allDone)setTimeout(()=>confetti(220),400);else confetti(100);
+  }
+}
+function showVictory(){
+  const st=me;
+  $('#pl-ic').textContent='👑';$('#pl-title').innerHTML='SELAMAT!<br><span style="font-size:1rem" class="mut">KAMU TELAH MENJADI</span><br><span style="background:linear-gradient(100deg,#fbbf24,#f472b6);-webkit-background-clip:text;background-clip:text;color:transparent">COMPUTATIONAL THINKING MASTER</span>';
+  $('#pl-body').innerHTML=
+    '<div class="resrow"><span>👤 Nama</span><b>'+esc(st.nama)+'</b></div>'+
+    '<div class="resrow"><span>🆔 NIS</span><b>'+esc(st.nis)+'</b></div>'+
+    '<div class="resrow"><span>🏫 Kelas</span><b>'+esc(st.kelas)+'</b></div>'+
+    '<div class="resrow"><span>🎯 Skor</span><b>'+st.score+'</b></div>'+
+    '<div class="resrow"><span>⚡ XP</span><b>'+st.xp+'</b></div>'+
+    '<div class="resrow"><span>🏁 Challenge selesai</span><b>'+countChal()+'</b></div>'+
+    '<div class="resrow"><span>🎖️ Badge</span><b>'+st.badges.length+'/6</b></div>';
+  $('#pl-btn').textContent='📊 Lihat Hasil Saya';
+  $('#pl-btn').onclick=()=>{popOff('pop-level');showSub('hasil');};
+  popOn('pop-level');confetti(260);
+}
+function retryLevel(){
+  popOff('pop-over');
+  if(S)openLevel(S.L.id);
+}
+
+/* ================================================================
+   BADGE
+================================================================ */
+function checkBadges(){
+  const st=me,have=new Set(st.badges),newB=[];
+  const give=id=>{if(!have.has(id)){have.add(id);newB.push(id);}};
+  if(countChal()>=10)give('solver');
+  if((st.skill.logika?.c||0)>=10)give('logic');
+  if(st.fast>=5)give('speed');
+  if(st.done>=6)give('breaker');
+  if(st.done>=3)give('algo');
+  if(st.done>=7)give('master');
+  if(newB.length){
+    st.badges=[...have];save();
+    const b=BADGES.find(x=>x.id===newB[0]);
+    logAct(st.nama+' mendapatkan badge '+b.ic+' '+b.nm);
+    $('#pb-ic').textContent=b.ic;$('#pb-nm').textContent='Badge Baru: '+b.nm+'!';
+    $('#pb-ds').textContent=b.ds;
+    setTimeout(()=>popOn('pop-badge'),600);
+  }
+}
+function renderBadges(){
+  $('#bd-grid').innerHTML=BADGES.map(b=>{
+    const got=me.badges.includes(b.id);
+    return '<div class="card" style="padding:1.4rem;text-align:center;'+(got?'border-color:rgba(251,191,36,.5)':'opacity:.45;filter:grayscale(.7)')+'">'+
+      '<div class="badge-ic" style="width:70px;height:70px;font-size:2rem">'+b.ic+'</div>'+
+      '<h4 style="margin:.5rem 0 .2rem">'+b.nm+'</h4><p class="mut" style="font-size:.8rem">'+b.ds+'</p>'+
+      '<div style="margin-top:.6rem;font-size:.75rem;font-weight:700;color:'+(got?'var(--ye)':'var(--tx2)')+'">'+(got?'✅ TERKUNCI':'🔒 Belum didapat')+'</div></div>';
+  }).join('');
+}
+
+/* ================================================================
+   LEADERBOARD & HASIL
+================================================================ */
+function renderBoard(){
+  const f=$('#lb-filter').value;
+  let list=[...db.students].sort((a,b)=>b.xp-a.xp);
+  if(f)list=list.filter(s=>s.kelas===f);
+  $('#lb-body').innerHTML='<table class="tbl"><thead><tr><th>Ranking</th><th>Nama</th><th>Kelas</th><th>XP</th><th>Level</th></tr></thead><tbody>'+
+    (list.length?list.map((s,i)=>'<tr class="'+(me&&s.id===me.id?'me':'')+'"><td class="medal">'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1))+'</td><td><b>'+esc(s.nama)+'</b></td><td>'+s.kelas+'</td><td style="color:var(--ye);font-weight:700">'+s.xp+'</td><td>'+Math.min(7,Math.floor(s.xp/400)+1)+'</td></tr>').join(''):'<tr><td colspan="5" class="mut" style="text-align:center;padding:2rem">Belum ada data</td></tr>')+'</tbody></table>';
+}
+function renderHasil(){
+  const st=me,perL=LEVELS.map(L=>{
+    const p=st.per[L.id];return '<tr><td>'+L.ikon+' L'+L.id+' — '+L.nama+'</td><td>'+(p?p.xp+' XP':'—')+'</td><td>'+(p?p.c+' / '+p.w:'—')+'</td><td>'+(p?fmtT(p.time):'—')+'</td></tr>';
+  }).join('');
+  const totC=st.correctN||0,totW=st.wrongN||0,acc=(totC+totW)?Math.round(totC/(totC+totW)*100):0;
+  $('#hs-body').innerHTML=
+    '<div class="statgrid">'+
+    ['🎯 Skor|'+st.score,'⚡ XP|'+st.xp,'🏁 Selesai|'+st.done+'/7 level','🎖️ Badge|'+st.badges.length,'🥇 Ranking|#'+rankOf(st),'🎯 Akurasi|'+acc+'%']
+    .map(x=>{const[a,b]=x.split('|');return '<div class="stat card"><b style="color:var(--cy)">'+b+'</b><span>'+a+'</span></div>';}).join('')+'</div>'+
+    '<div class="card" style="padding:1.3rem;margin:1rem 0"><h3 style="margin-bottom:.8rem">📈 Per Level</h3><div class="tblwrap"><table class="tbl"><thead><tr><th>Level</th><th>XP Terbaik</th><th>Benar/Salah</th><th>Waktu</th></tr></thead><tbody>'+perL+'</tbody></table></div></div>'+
+    '<div class="card" style="padding:1.3rem"><h3 style="margin-bottom:.8rem">🎖️ Badge</h3>'+
+    (st.badges.length?st.badges.map(id=>{const b=BADGES.find(x=>x.id===id);return '<span class="tag" style="border-color:rgba(251,191,36,.5);margin:.2rem">'+b.ic+' '+b.nm+'</span>';}).join(''):'<span class="mut">Belum ada badge — ayo bermain!</span>')+'</div>'+
+    '<div class="card" style="padding:1.3rem;margin-top:1rem"><h3 style="margin-bottom:.8rem">🕒 Riwayat Terbaru</h3>'+
+    (st.hist.length?'<div class="act-feed">'+st.hist.slice(0,8).map(h=>'<div class="act-it"><span>📌 '+esc(h.ket)+'</span><time>'+relTime(h.t)+'</time></div>').join('')+'</div>':'<span class="mut">Belum ada riwayat.</span>')+'</div>'+
+    '<div style="display:flex;gap:.8rem;margin-top:1.3rem;flex-wrap:wrap"><button class="btn btn-p" onclick="showSub(\'play\')">🔄 Main Lagi</button><button class="btn btn-y" onclick="showSub(\'board\')">🏆 Lihat Ranking</button></div>';
+}
+
+/* ================================================================
+   ADMIN
+================================================================ */
+function avg(list,fn){return list.length?list.reduce((a,b)=>a+fn(b),0)/list.length:0;}
+function skillPct(st,cat){const s=st.skill[cat];if(!s||(!s.c&&!s.w))return null;return Math.round(s.c/(s.c+s.w)*100);}
+function renderAStat(){
+  const ss=db.students,aktif=ss.filter(s=>Date.now()-s.last<10*60e3).length;
+  const chal=ss.reduce((a,s)=>a+countChalOf(s),0);
+  const rata=avg(ss.filter(s=>s.status!=='off'),s=>s.score);
+  const wakt=avg(ss.filter(s=>Object.keys(s.per).length),s=>Object.values(s.per).reduce((a,p)=>a+(p.time||0),0)/Object.keys(s.per).length);
+  const top=[...ss].sort((a,b)=>b.xp-a.xp)[0];
+  $('#as-cards').innerHTML=[
+    ['👨‍🎓','Total Siswa',ss.length,'var(--cy)'],['🟢','Siswa Aktif (10 mnt)',aktif,'var(--gr)'],
+    ['🏆','Challenge Selesai',chal,'var(--ye)'],['📊','Rata-rata Nilai',Math.round(rata),'var(--vi)'],
+    ['⏱️','Rata-rata Waktu/Lv',fmtT(Math.round(wakt||0)),'var(--pk)'],['🔥','XP Tertinggi',top?top.xp:0,'var(--ye)']
+  ].map(c=>'<div class="stat card"><span class="ic">'+c[0]+'</span><b style="color:'+c[3]+'">'+c[2]+'</b><span>'+c[1]+'</span></div>').join('');
+  $('#as-top').innerHTML='<div class="act-feed">'+[...ss].sort((a,b)=>b.xp-a.xp).slice(0,5).map((s,i)=>
+    '<div class="act-it"><b>'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1))+'</b><span>'+esc(s.nama)+' <span class="mut">('+s.kelas+')</span></span><time style="color:var(--ye)">'+s.xp+' XP</time></div>').join('')+'</div>';
+}
+function countChalOf(s){let n=0;for(const k in s.per)n+=s.per[k].c||0;return n;}
+function renderAStudents(){
+  const cari=($('#fs-cari')?.value||'').toLowerCase(),fk=$('#fs-kelas')?.value||'';
+  let list=db.students.filter(s=>(!cari||s.nama.toLowerCase().includes(cari)||s.nis.includes(cari))&&(!fk||s.kelas===fk));
+  $('#as-tbl').innerHTML='<table class="tbl"><thead><tr><th>No</th><th>Nama</th><th>NIS</th><th>Kelas</th><th>Level</th><th>XP</th><th>Skor</th><th>Progress</th><th>Status</th><th></th></tr></thead><tbody>'+
+    (list.length?list.map((s,i)=>'<tr><td>'+(i+1)+'</td><td><b>'+esc(s.nama)+'</b></td><td class="mono">'+esc(s.nis)+'</td><td>'+s.kelas+'</td><td>'+Math.min(7,Math.floor(s.xp/400)+1)+'</td><td style="color:var(--ye)">'+s.xp+'</td><td>'+s.score+'</td>'+
+    '<td style="min-width:110px"><div class="pbar" style="height:8px;margin:0"><i style="width:'+Math.round(s.done/7*100)+'%"></i></div><small class="mut">'+s.done+'/7</small></td>'+
+    '<td>'+(s.status==='on'?'<span class="dotg"></span> Aktif':'⚪ Belum bermain')+'</td>'+
+    '<td><button class="btn btn-g" style="padding:.4rem .9rem;min-height:0;font-size:.8rem" onclick="openDetail(\''+s.id+'\')">Detail</button></td></tr>').join(''):'<tr><td colspan="10" class="mut" style="text-align:center;padding:2rem">Tidak ditemukan</td></tr>')+'</tbody></table>';
+}
+function openDetail(id){
+  const s=db.students.find(x=>x.id===id);if(!s)return;
+  const perL=LEVELS.map(L=>{const p=s.per[L.id];
+    return '<tr><td>'+L.ikon+' L'+L.id+'</td><td>'+(p?p.xp+' XP':'—')+'</td><td>'+(p?'✅ '+p.c+' · ❌ '+p.w:'—')+'</td><td>'+(p?p.att+'x':'—')+'</td><td>'+(p?fmtT(p.time):'—')+'</td></tr>';}).join('');
+  const skillRow=Object.keys(CATS).slice(0,5).map(k=>{const p=skillPct(s,k);return '<tr><td>'+CATS[k]+'</td><td>'+(p===null?'—':p+'%')+'</td></tr>';}).join('');
+  $('#pd-body').innerHTML='<h3 style="margin-bottom:.2rem">👤 '+esc(s.nama)+'</h3>'+
+    '<p class="mut" style="font-size:.85rem;margin-bottom:1rem">NIS '+esc(s.nis)+' · '+s.kelas+' · Level '+Math.min(7,Math.floor(s.xp/400)+1)+' · '+(s.status==='on'?'🟢 Aktif':'⚪ Belum bermain')+'</p>'+
+    '<div class="statgrid"><div class="stat card"><b style="color:var(--ye)">'+s.xp+'</b><span>XP</span></div><div class="stat card"><b style="color:var(--cy)">'+s.score+'</b><span>Skor</span></div><div class="stat card"><b style="color:var(--gr)">'+countChalOf(s)+'</b><span>Challenge</span></div><div class="stat card"><b style="color:var(--pk)">'+s.badges.length+'</b><span>Badge</span></div></div>'+
+    '<h4 style="margin:.8rem 0 .5rem">📈 Progres per Level</h4><div class="tblwrap"><table class="tbl"><thead><tr><th>Level</th><th>XP</th><th>Benar/Salah</th><th>Percobaan</th><th>Waktu</th></tr></thead><tbody>'+perL+'</tbody></table></div>'+
+    '<h4 style="margin:1rem 0 .5rem">🧠 Kemampuan per Materi</h4><div class="tblwrap"><table class="tbl"><tbody>'+skillRow+'</tbody></table></div>'+
+    '<h4 style="margin:1rem 0 .5rem">🎖️ Badge</h4>'+ (s.badges.length?s.badges.map(id=>{const b=BADGES.find(x=>x.id===id);return '<span class="tag" style="border-color:rgba(251,191,36,.5);margin:.15rem">'+b.ic+' '+b.nm+'</span>';}).join(''):'<span class="mut">Belum ada</span>')+
+    '<h4 style="margin:1rem 0 .5rem">🕒 Riwayat</h4>'+(s.hist.length?'<div class="act-feed">'+s.hist.slice(0,10).map(h=>'<div class="act-it"><span>📌 '+esc(h.ket)+'</span><time>'+relTime(h.t)+'</time></div>').join('')+'</div>':'<span class="mut" style="font-size:.85rem">Belum ada riwayat.</span>');
+  popOn('pop-detail');
+}
+function renderMonitor(){
+  $('#am-feed').innerHTML=db.acts.slice(0,25).map(a=>
+    '<div class="act-it"><span class="dotg" style="margin-top:.4rem"></span><span>🟢 '+esc(a.tx)+'</span><time>'+relTime(a.t)+'</time></div>').join('')||'<span class="mut">Belum ada aktivitas.</span>';
+}
+function renderAnalysis(){
+  const cats=['dekomposisi','pola','abstraksi','algoritma','logika'];
+  const cols={dekomposisi:'#a78bfa',pola:'#22d3ee',abstraksi:'#f472b6',algoritma:'#34d399',logika:'#fbbf24'};
+  const avgCat={};cats.forEach(c=>{const vals=db.students.map(s=>skillPct(s,c)).filter(v=>v!==null);avgCat[c]=vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):0;});
+  $('#aa-bars').innerHTML=cats.map(c=>{
+    const v=avgCat[c];
+    return '<div class="skbar"><span class="nm">'+CATS[c]+'</span><div class="tr"><i data-w="'+v+'" style="background:linear-gradient(90deg,'+cols[c]+','+cols[c]+'88)"></i></div><span class="pc" style="color:'+cols[c]+'">'+v+'%</span></div>';
+  }).join('');
+  setTimeout(()=>{$$('#aa-bars .tr i').forEach(i=>i.style.width=i.dataset.w+'%');},100);
+  const min=cats.reduce((a,b)=>avgCat[a]<=avgCat[b]?a:b);
+  const v=avgCat[min];
+  $('#aa-rekom').innerHTML=v<70
+    ?'📌 <b>Rekomendasi otomatis:</b> Siswa perlu lebih banyak latihan pada materi <b>'+CATS[min]+'</b> ('+v+'%). Sarankan mengulang level terkait ('+LEVELS[CATLEVEL[min]-1].nama+') dan berikan soal tambahan bermateri tersebut.'
+    :'✅ <b>Kesimpulan:</b> Seluruh kemampuan rata-rata sudah di atas 70%. Pertahankan! Tantang siswa dengan soal 🔥 HOTS di menu Challenge.';
+}
+function renderRekap(){
+  $('#ar-tbl').innerHTML='<table class="tbl"><thead><tr><th>No</th><th>Nama</th><th>Kelas</th><th>Benar</th><th>Salah</th><th>Percobaan</th><th>Waktu</th><th>XP</th><th>Badge</th><th>Nilai</th></tr></thead><tbody>'+
+    db.students.map((s,i)=>{
+      let c=0,w=0,att=0,time=0;for(const k in s.per){c+=s.per[k].c||0;w+=s.per[k].w||0;att+=s.per[k].att||0;time+=s.per[k].time||0;}
+      const nilai=(c+w)?Math.round(c/(c+w)*100):0;
+      return '<tr><td>'+(i+1)+'</td><td><b>'+esc(s.nama)+'</b></td><td>'+s.kelas+'</td><td style="color:var(--gr)">'+c+'</td><td style="color:var(--rd)">'+w+'</td><td>'+att+'</td><td>'+fmtT(time)+'</td><td style="color:var(--ye)">'+s.xp+'</td><td>'+s.badges.length+'</td><td><b style="color:'+(nilai>=75?'var(--gr)':nilai>=50?'var(--ye)':'var(--rd)')+'">'+nilai+'</b></td></tr>';
+    }).join('')+'</tbody></table>';
+}
+/* ---------- Export ---------- */
+function rekapRows(){
+  return db.students.map((s,i)=>{
+    let c=0,w=0,att=0,time=0;for(const k in s.per){c+=s.per[k].c||0;w+=s.per[k].w||0;att+=s.per[k].att||0;time+=s.per[k].time||0;}
+    return [i+1,s.nama,s.nis,s.kelas,Math.min(7,Math.floor(s.xp/400)+1),c,w,att,fmtT(time),s.xp,s.score,s.badges.map(id=>BADGES.find(b=>b.id===id).nm).join('; '),(c+w)?Math.round(c/(c+w)*100):0];
+  });
+}
+const REKAP_HEAD=['No','Nama','NIS','Kelas','Level','Benar','Salah','Percobaan','Waktu','XP','Skor','Badge','Nilai'];
+function dlFile(name,content,mime){const b=new Blob([content],{type:mime});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);}
+function exportCSV(){
+  const csv=[REKAP_HEAD.join(';')].concat(rekapRows().map(r=>r.join(';'))).join('\n');
+  dlFile('rekap_ct_challenge.csv','\ufeff'+csv,'text/csv;charset=utf-8');
+  toast('📥 File CSV berhasil diunduh!');
+}
+function exportExcel(){
+  let h='<table border="1"><tr>'+REKAP_HEAD.map(x=>'<th>'+x+'</th>').join('')+'</tr>';
+  rekapRows().forEach(r=>h+='<tr>'+r.map(x=>'<td>'+esc(x)+'</td>').join('')+'</tr>');
+  dlFile('rekap_ct_challenge.xls',h+'</table>','application/vnd.ms-excel');
+  toast('📊 File Excel berhasil diunduh!');
+}
+function exportPDF(){
+  let h='<h2 style="font-family:sans-serif">Rekap Nilai — Computational Thinking Challenge</h2><table><tr>'+REKAP_HEAD.map(x=>'<th>'+x+'</th>').join('')+'</tr>';
+  rekapRows().forEach(r=>h+='<tr>'+r.map(x=>'<td>'+esc(x)+'</td>').join('')+'</tr>');
+  const p=$('#printArea');p.innerHTML=h+'</table><p style="font-family:sans-serif;font-size:12px">Dicetak: '+new Date().toLocaleString('id-ID')+'</p>';
+  p.style.display='block';window.print();p.style.display='none';
+  toast('🖨️ Pilih "Save as PDF" pada dialog cetak.');
+}
+/* ---------- Challenge Management ---------- */
+function renderManage(){
+  const qs=allQ();
+  $('#am-count').textContent=qs.length+' challenge aktif · '+(db.qoff.length)+' dinonaktifkan · '+db.custom.length+' buatan guru';
+  $('#am-tbl').innerHTML='<table class="tbl"><thead><tr><th>Judul / Pertanyaan</th><th>Kategori</th><th>Level</th><th>Kesulitan</th><th>Status</th><th>Aksi</th></tr></thead><tbody>'+
+    qs.map(q=>{
+      const judul=q.judul||q.q.replace(/<[^>]*>/g,'').slice(0,60)+'…';
+      const on=!db.qoff.includes(q.q);
+      const key=q.q;
+      return '<tr style="'+(on?'':'opacity:.5')+'"><td style="max-width:280px">'+esc(judul)+(q.custom?' <span class="tag" style="font-size:.65rem;color:var(--gr)">GURU</span>':'')+'</td>'+
+      '<td>'+CATS[q.c]+'</td><td>L'+CATLEVEL[q.c]+'</td><td><span class="chipd '+DIFFCHIP[q.d]+'">'+DIFFNAMA[q.d]+'</span></td>'+
+      '<td>'+(on?'🟢 Aktif':'⚪ Nonaktif')+'</td>'+
+      '<td style="white-space:nowrap"><button class="btn btn-g" style="padding:.35rem .6rem;min-height:0;font-size:.75rem" title="Aktif/Nonaktif" onclick="toggleQ(this)" data-q=\''+esc(key)+'\'>'+(on?'⏸️':'▶️')+'</button> '+
+      '<button class="btn btn-g" style="padding:.35rem .6rem;min-height:0;font-size:.75rem" title="Duplikasi" onclick="dupQ(this)" data-q=\''+esc(key)+'\'>📋</button> '+
+      (q.custom?'<button class="btn btn-g" style="padding:.35rem .6rem;min-height:0;font-size:.75rem" title="Edit" onclick="editQ('+q.ci+')">✏️</button> <button class="btn btn-warn" style="padding:.35rem .6rem;min-height:0;font-size:.75rem" title="Hapus" onclick="delQ('+q.ci+')">🗑️</button>':'')+'</td></tr>';
+    }).join('')+'</tbody></table>';
+}
+function toggleQ(btn){const k=btn.dataset.q;
+  if(db.qoff.includes(k))db.qoff=db.qoff.filter(x=>x!==k);else db.qoff.push(k);
+  save();renderManage();toast(db.qoff.includes(k)?'⚪ Challenge dinonaktifkan':'🟢 Challenge diaktifkan');}
+function dupQ(btn){
+  const q=allQ().find(x=>x.q===btn.dataset.q);if(!q)return;
+  db.custom.push({judul:'(Salinan) '+(q.judul||q.q.replace(/<[^>]*>/g,'').slice(0,30)),c:q.c,d:q.d,t:'mc',q:q.q+' [SALINAN]',o:[...q.o],a:q.a,ex:q.ex,h:q.h,timer:q.timer,poin:q.poin,custom:true});
+  save();renderManage();toast('📋 Challenge diduplikasi ke soal buatan guru.');}
+function delQ(ci){if(!confirm('Hapus challenge ini?'))return;db.custom.splice(ci,1);save();renderManage();toast('🗑️ Challenge dihapus.');}
+function editQ(ci){
+  const q=db.custom[ci];if(!q)return;
+  $('#pf-title').textContent='✏️ Edit Challenge';
+  $('#pf-id').value=ci;$('#pf-judul').value=q.judul||'';$('#pf-cat').value=q.c;$('#pf-diff').value=q.d;
+  $('#pf-q').value=q.q.replace(/<br>/g,'\n').replace(/<[^>]*>/g,'');
+  [0,1,2,3].forEach(i=>$('#pf-o'+i).value=q.o[i]||'');
+  $('#pf-a').value=q.a;$('#pf-poin').value=q.poin||DIFFXP[q.d];$('#pf-timer').value=q.timer||qTime(q);$('#pf-ex').value=q.ex||'';
+  popOn('pop-form');
+}
+function openChallengeForm(){
+  $('#pf-title').textContent='➕ Tambah Challenge';
+  ['pf-id','pf-judul','pf-q','pf-o0','pf-o1','pf-o2','pf-o3','pf-ex'].forEach(id=>$('#'+id).value='');
+  $('#pf-a').value='0';$('#pf-poin').value='100';$('#pf-timer').value='40';$('#pf-diff').value='1';
+  popOn('pop-form');
+}
+function saveChallenge(){
+  const judul=$('#pf-judul').value.trim(),q=$('#pf-q').value.trim(),
+        o=[$('#pf-o0').value.trim(),$('#pf-o1').value.trim(),$('#pf-o2').value.trim(),$('#pf-o3').value.trim()].filter(x=>x);
+  if(!judul||!q||o.length<2){$('#pf-err').style.display='block';return;}
+  $('#pf-err').style.display='none';
+  const obj={judul,c:$('#pf-cat').value,d:+$('#pf-diff').value,t:'mc',
+    q:esc(q).replace(/\n/g,'<br>'),o:o.map(esc),a:Math.min(+$('#pf-a').value,o.length-1),
+    ex:esc($('#pf-ex').value.trim())||'Jawaban sesuai konsep materi.',h:'Coba terapkan konsep '+CATS[$('#pf-cat').value]+'.',
+    timer:+$('#pf-timer').value||40,poin:+$('#pf-poin').value||100,custom:true};
+  const id=$('#pf-id').value;
+  if(id!=='')db.custom[+id]=obj;else db.custom.push(obj);
+  save();popOff('pop-form');renderManage();
+  toast(id!==''?'✏️ Challenge diperbarui!':'➕ Challenge baru ditambahkan & langsung masuk ke level!');
+}
+
+/* ================================================================
+   INIT
+================================================================ */
+ $('#in-nis').addEventListener('keydown',e=>{if(e.key==='Enter')loginSiswa();});
+ $('#ad-pass').addEventListener('keydown',e=>{if(e.key==='Enter')loginAdmin();});
+window.addEventListener('resize',()=>{cc.width=innerWidth;cc.height=innerHeight;});
+</script>
+</body>
+</html>
